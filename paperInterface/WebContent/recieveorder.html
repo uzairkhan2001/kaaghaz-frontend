@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+  <title>Receive Purchase Order</title>
+  
+  <link rel="stylesheet" href="syles.css">
+  <style>
+    body{
+      margin: 0%;
+      padding: 0%;
+    }
+    * {
+          box-sizing: border-box;
+     }
+     .tble{
+    font-family: 'Montserrat', sans-serif;  
+      text-align: center;  
+      background-color: rgb(63,72,83);  
+      font-family: sans-serif;  
+      color: rgb(5, 5, 5);  
+      overflow-x: hidden;  
+}
+.topnav {
+  overflow: hidden;
+  background-color: #333;
+}
+
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: #03e9f4;
+  color: black;
+
+}   
+</style>
+</head>
+<body>
+<div class="topnav">
+    <a class="active" href="http://localhost:8080/paperInterface/homepage.html">Home</a>
+    <a href="#news">Inventory</a>
+    <a href="http://localhost:8080/paperInterface/Reports.html">Report</a>
+    <a href="#about">About</a>
+</div>
+<div class="tble">
+<h1 class="head1">Received Inventory</h1>
+<table class="tableData">  
+  <thead>  
+    <tr>  
+      <th> Purchase ID </th>  
+      <th> Size </th>  
+      <th> Weight </th>  
+      <th> Vendor </th>  
+      <th> Total Quantity </th>  
+      <th> Received Intact </th>  
+      <th> Received Damage </th>  
+      <th> Remaining Quantity </th> 
+      <th> Status </th>  
+    </tr>   
+  </thead> 
+  <tbody id = "receiveRecord"> </tbody>  
+  
+</table>
+ <div class="loginPopup">
+  <div class="formPopup" id="popupForm">
+  </div>
+</div>
+<label class="lbl" hidden="hidden">Please Insert Valid Quantity!</label>
+</div>
+</body>
+<script type="text/javascript">
+
+var parseXML;
+if (typeof window.DOMParser != "undefined") {
+ parseXML = function(xmlStr) {
+ return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
+ };
+} else if (typeof window.ActiveXObject != "undefined" &&
+ new window.ActiveXObject("Microsoft.XMLDOM")) {
+ parseXML = function(xmlStr) {
+ var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
+ xmlDoc.async = "false";
+ xmlDoc.loadXML(xmlStr);
+ return xmlDoc;
+ };
+} else {
+ throw new Error("No XML parser found");
+}
+
+window.onload = (e) =>{
+	console.log("Page has been loaded");
+	
+	getAllRecievedRecord();
+	// createForm();
+}
+
+function getAllRecievedRecord(){
+	var myHeaders = new Headers();
+	myHeaders.append("SOAPAction", "\"\"");
+	myHeaders.append("Content-Type", "text/plain");
+
+	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <getAllRecievedRecords xmlns="http://mainpkg"/>
+    </Body>
+</Envelope>`
+	
+var requestOptions = {
+method: 'POST',
+headers: myHeaders,
+body: raw,
+redirect: 'follow'
+};
+
+fetch("http://localhost:8080/paper/services/GetAllRecievedRecords", requestOptions)
+.then(response => response.text())
+	  .then(result =>  {
+			
+		  var xml = parseXML(result);
+		  var tbody = document.getElementById('receiveRecord');
+		  var numberOfRecords = xml.getElementsByTagName('getAllRecievedRecordsReturn').length;
+		
+		  for(i = 0; i < numberOfRecords; i++){
+			  
+			  	var purchaseId = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[0].childNodes[0].nodeValue;
+					var size = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[1].childNodes[0].nodeValue;
+					var weight = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[2].childNodes[0].nodeValue;
+					var vendor = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[3].childNodes[0].nodeValue;
+					var total_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[4].childNodes[0].nodeValue;
+					var receive_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[5].childNodes[0].nodeValue;
+					var damage_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[6].childNodes[0].nodeValue;
+         	var remain_Quan = total_Quan - receive_Quan - damage_Quan;
+
+					additem(purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan,purchaseId);
+		  }
+	  })
+	  .catch(error => console.log('error', error));
+}
+
+function additem(purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan,purchaseId){
+
+  var tbody = document.getElementById('receiveRecord');
+
+  let br = document.createElement("br");
+  let br1 = document.createElement('br');
+  let br2 = document.createElement('br');
+
+	let trow=document.createElement("tr");
+	let td1=document.createElement('td');
+	let td2=document.createElement('td');
+	let td3=document.createElement('td');
+	let td4=document.createElement('td');
+	let td5=document.createElement('td');
+	let td6=document.createElement('td');
+	let td7=document.createElement('td');
+ 	let td8=document.createElement('td');
+  let td9=document.createElement('td');
+  
+	td1.innerHTML=purchaseId;
+	td2.innerHTML=size;
+	td3.innerHTML=weight;
+	td4.innerHTML=vendor;
+	td5.innerHTML=total_Quan;
+	td6.innerHTML=receive_Quan;
+	td7.innerHTML=damage_Quan;
+	td8.innerHTML=remain_Quan;
+  td8.setAttribute("id","rem" + purchaseId);
+  
+  
+	trow.appendChild(td1);
+	trow.appendChild(td2);
+	trow.appendChild(td3);
+	trow.appendChild(td4);
+	trow.appendChild(td5);
+	trow.appendChild(td6);
+	trow.appendChild(td7);
+  trow.appendChild(td8);
+
+  var buttonText;
+
+  if(remain_Quan == 0)
+  {
+    td9.innerHTML = "Completed";
+  }
+  else
+  {  if (remain_Quan < total_Quan)
+    {
+      buttonText = "Receive More";
+    }
+   else
+    {
+      buttonText = "Receive";
+    }
+
+    let tdbutton = document.createElement('button');
+    tdbutton.innerText = buttonText;
+    tdbutton.setAttribute("id","rcv" + purchaseId);
+    tdbutton.setAttribute("onCLick", "openForm(this.id)");
+    tdbutton.setAttribute("class", "edit");
+    td9.appendChild(tdbutton);
+  }
+  let tdbutton2 = document.createElement('button');
+    tdbutton2.innerText ="View";
+    tdbutton2.setAttribute("id",purchaseId);
+    tdbutton2.setAttribute("onCLick", "redirect(this.id)");
+    tdbutton2.setAttribute("class", "edit");
+    td9.appendChild(br1);
+    td9.appendChild(br2);
+    td9.appendChild(tdbutton2);
+
+
+  trow.appendChild(td9);
+  tbody.appendChild(trow);
+	tbody.appendChild(br);
+}
+
+function redirect(pid){
+  
+    window.location.href = 'http://localhost:8080/paperInterface/Reports.html?pid='+pid;
+}
+
+
+function createForm(purchaseId){
+
+let br1 = document.createElement("br");
+let br2 = document.createElement("br");
+let br3 = document.createElement("br");
+let br4 = document.createElement("br");
+let br5 = document.createElement("br");
+
+var f = document.createElement('form');
+f.setAttribute("class","formContainer");
+f.setAttribute("id", "rcvfrm");
+
+const h = document.createElement('h2');
+h.textContent = "Received Data";
+
+var label1 = document.createElement('label');
+label1.innerHTML = "PURCHASE ID: "+purchaseId;
+
+const label2 = document.createElement('label');
+label2.textContent = "Received Intact";
+
+//create input element 1
+var intact = document.createElement('input');
+intact.type = "number";
+intact.name = "int";
+intact.id = "intact";
+intact.placeholder = "Quantity"
+
+const label3 = document.createElement('label');
+label3.textContent = "Received Damage";
+
+//create input element 2
+var damage = document.createElement('input');
+damage.type = "number";
+damage.name = "dmg";
+damage.id = "damage";
+damage.placeholder = "Quantity"
+
+//create a button
+let insert = document.createElement('button');
+insert.innerText = "Insert";
+insert.type = "button";
+insert.setAttribute("class",'save');
+insert.setAttribute("id", "ins" + purchaseId);
+insert.setAttribute("onCLick", "insertReceive(this.id)");
+
+//create a button
+let close = document.createElement('button');
+close.innerText = "close";
+close.type = "button";
+close.setAttribute("class",'delete');
+close.setAttribute("onCLick", "closeForm()");
+
+// add all elements to the form
+f.appendChild(h);
+f.appendChild(label1);
+f.appendChild(br1);
+f.appendChild(br5);
+f.appendChild(label2);
+f.appendChild(intact);
+f.appendChild(label3);
+f.appendChild(damage);
+f.appendChild(br2);
+f.appendChild(insert);
+f.appendChild(br3);
+f.appendChild(br4);
+f.appendChild(close);
+
+// add the form inside the body
+document.getElementById('popupForm').appendChild(f); //pure javascript
+}
+
+function openForm(purchaseId) {
+    if(document.getElementById("rcvfrm") == null)
+    {
+      let pid;
+
+      if(purchaseId[0] == 'r')
+      {
+        pid = purchaseId.substring(3);
+      }
+      else
+      {
+        pid = purchaseId
+      }
+
+      createForm(pid);
+      document.getElementById("popupForm").style.display = "block";
+    }
+  }
+
+  function closeForm() {
+  document.getElementById("popupForm").style.display = "none";
+  document.getElementById("popupForm").removeChild(document.getElementById("rcvfrm"));
+}
+
+function validateValues(pid) {
+	var intct = parseInt(document.getElementById("intact").value);
+  var dmge = parseInt(document.getElementById("damage").value);
+  error = "Invalid Input"
+  var tqty=intct+dmge;
+  var myHeaders = new Headers();
+  myHeaders.append("SOAPAction", "\"\"");
+  myHeaders.append("Content-Type", "text/plain");
+
+var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <getQuantity xmlns="http://mainpkg">
+            <ID>${pid}</ID>
+        </getQuantity>
+    </Body>
+</Envelope>`
+
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+// fetch("http://localhost:8080/paper/services/GetQuantity", requestOptions)
+//   .then(response => response.text())
+//   .then(result =>  {
+// 			  var xml = parseXML(result);
+			  
+// 				tqty = xml.getElementsByTagName('getQuantityReturn')[0].childNodes[0].nodeValue;
+// 				rqty = xml.getElementsByTagName('getQuantityReturn')[1].childNodes[0].nodeValue;
+			  
+	
+// 		  })
+//   .catch(error => console.log('error', error));
+//   var trec = rqty+intct;
+
+  var trec = parseInt(document.getElementById("rem" + pid). innerText);
+
+  if(tqty > trec){
+    alert(error); 
+    return 0;
+  }
+  return 1;
+	}
+
+function insertReceive(purchaseId){
+  
+  var pid = purchaseId.substring(3)
+  var intct =document.getElementById("intact").value
+  var dmge = document.getElementById("damage").value
+
+  
+  res = validateValues(pid);
+  if(res == 0){
+    closeForm();
+    openForm(pid);
+  }
+  else
+  {
+    var myHeaders = new Headers();
+  myHeaders.append("SOAPAction", "\"\"");
+  myHeaders.append("Content-Type", "text/plain");
+
+  var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <insertRecieveOrder xmlns="http://mainpkg">
+            <purchaseID>${pid}</purchaseID>
+            <intact>${intct}</intact>
+            <damage>${dmge}</damage>
+        </insertRecieveOrder>
+    </Body>
+</Envelope>`
+
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("http://localhost:8080/paper/services/Recieveorder", requestOptions)
+  .then(response => response.text())
+  .then(result =>
+    { 
+      console.log(result);
+      closeForm();
+    })
+  .catch(error => console.log('error', error));
+  }
+}
+
+function addallitem(id,purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan){
+	tbody.innerHTML="";
+	order.forEach(element=>{
+		additem(element.purchaseId,element.size,element.weight,element.vendor,element.total_Quan,element.receive_Quan,element.damage_Quan,element.remain_Quan)
+	})
+}
+</script>
+</html>

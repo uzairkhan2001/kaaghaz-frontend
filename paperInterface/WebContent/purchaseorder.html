@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+
+	<title>Place Purchase Order</title>
+
+	<link rel="stylesheet" href="syles.css">
+	
+	<style>
+	html {
+	  height: 100%;
+	}
+	.topnav {
+	  margin:0;
+	  padding:0;
+	  font-family: sans-serif;
+	}
+	.topnav {
+  overflow: hidden;
+  background-color: #333;
+}
+
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: #03e9f4;
+  color: black;
+
+} 
+.login-box {
+  margin-top: 50px;
+  background-color:  #333;
+}
+body{
+	background-color:#020202;;
+}
+	</style>
+
+</head>
+<body>
+	<div class="topnav">
+        <a class="active" href="http://localhost:8080/paperInterface/homepage.html">Home</a>
+        <a href="#news">Inventory</a>
+        <a href="http://localhost:8080/paperInterface/Reports.html">Report</a>
+        <a href="#about">About</a>
+    </div>
+<div class = "login-box">
+	<h2>Place Purchase Order</h2>
+	<div id="first">
+		<div class="user-box">
+			<label>Category:</label>
+			<br> <br> 
+			<select id="Category" onchange="">
+				<option value="0">Select a category</option>
+				<option value="1">Papers</option>
+				<option value="2">Title Card</option>
+				<option value="3">Separator Card</option>
+			</select>
+		</div>
+	<div class="user-box">
+		<label>Sizes:</label>
+		<br> <br> 
+		<select id="sizes" onchange="loadWeights()">
+			<option value="0">Select a size</option>
+		</select>
+	</div>
+	<div class="user-box">
+		<label>Weights:</label> 
+		<br> <br> 
+		<select id="weights" onchange="loadVendors()">
+			<option value="0">Select a weight</option>
+		</select>
+	</div>
+	<div class="user-box">
+		<label>Vendors</label>
+		<br> <br> 
+		<select id="vendors">
+			<option value="0">Select a Vendor</option>
+		</select> 
+	</div>
+	<br>
+	<div class="user-box">
+		<label>Quantity</label> 
+		<br> <br> 
+		<input id="Quantity"	type="number"></input>
+	</div>
+		<button type="button" onclick="createPurchaseOrder()">Place Order</button>
+	</div>
+	<br>
+	<br>
+	<div class="user-box">
+	<div id='second' hidden="hidden" >
+		<label id='placedorder'>Order Placed Successfully!</label>
+	</div>
+	<br>
+	<br>
+	<br>
+	<div id="error" ></div>
+</div>
+</div>
+	
+</body>
+<script type="text/javascript">
+
+var parseXML;
+if (typeof window.DOMParser != "undefined") {
+ parseXML = function(xmlStr) {
+ return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
+ };
+} else if (typeof window.ActiveXObject != "undefined" &&
+ new window.ActiveXObject("Microsoft.XMLDOM")) {
+ parseXML = function(xmlStr) {
+ var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
+ xmlDoc.async = "false";
+ xmlDoc.loadXML(xmlStr);
+ return xmlDoc;
+ };
+} else {
+ throw new Error("No XML parser found");
+}
+
+window.onload = (e) =>{
+	console.log("Page has been loaded");
+	getAllSizes();
+	loadWeights();
+	loadVendors();
+	
+}
+function validateValues() {
+	size = document.getElementById('sizes').value
+	weight = document.getElementById('weights').value
+	vendor = document.getElementById('vendors').value
+	quan = document.getElementById('Quantity').value
+	error = "All Fields must be Valid Input!"
+	  if (size == "0" || weight == "0" || vendor == "0" || quan < 1 ) {
+		alert(error);
+	    window.location.reload();
+	  }
+	
+	}
+	
+function removeOptions(selectElement) {
+	   var i, L = selectElement.options.length - 1;
+	   for(i = L; i >= 1; i--) {
+	      selectElement.remove(i);
+	   }
+}
+
+function getAllSizes(){
+	var myHeaders = new Headers();
+	myHeaders.append("SOAPAction", "\"\"");
+	myHeaders.append("Content-Type", "text/plain");
+
+	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    	<Body>
+        	<getAllSizeID xmlns="http://mainpkg"/>
+    	</Body>
+	</Envelope>`
+	var requestOptions = {
+	  method: 'POST',
+	  headers: myHeaders,
+	  body: raw,
+	  redirect: 'follow'
+	};
+
+	fetch("http://localhost:8080/paper/services/GetAllSizes", requestOptions)
+	  .then(response => response.text())
+	  .then(result => {
+			  var xml = parseXML(result);
+			  var select = document.getElementById('sizes');
+			  var numberOfSizes = xml.getElementsByTagName('getAllSizeIDReturn').length;
+			  for(i = 0; i < numberOfSizes; i++)
+			  {
+				var id = xml.getElementsByTagName('getAllSizeIDReturn')[i].childNodes[0].childNodes[0].nodeValue;
+				var name = xml.getElementsByTagName('getAllSizeIDReturn')[i].childNodes[1].childNodes[0].nodeValue;
+				
+				var opt = document.createElement('option');
+			    opt.value = id;
+			    opt.innerHTML = name;
+			    select.appendChild(opt);
+			  }
+		  })
+	  .catch(error => console.log('error', error));
+}
+
+function loadWeights()
+{	
+	removeOptions(document.getElementById('weights'));
+	var opt;
+	size = document.getElementById('sizes').value
+	
+	var myHeaders = new Headers();
+	myHeaders.append("SOAPAction", "\"\"");
+	myHeaders.append("Content-Type", "text/plain");
+
+	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    				<Body>
+        				<getAllweight xmlns="http://mainpkg">
+            				<SizeID>${size}</SizeID>
+        				</getAllweight>
+    				</Body>
+				</Envelope>`
+				
+	var requestOptions = {
+	  method: 'POST',
+	  headers: myHeaders,
+	  body: raw,
+	  redirect: 'follow'
+	};
+
+	fetch("http://localhost:8080/paper/services/GetAllWeight", requestOptions)
+	  .then(response => response.text())
+	  .then(result => {
+		  var xml = parseXML(result);
+		  var select = document.getElementById('weights');
+		  var numberOfWeights = xml.getElementsByTagName('getAllweightReturn').length;
+		  for(i = 0; i < numberOfWeights; i++)
+		  {
+			var id = xml.getElementsByTagName('getAllweightReturn')[i].childNodes[0].childNodes[0].nodeValue;
+			var name = xml.getElementsByTagName('getAllweightReturn')[i].childNodes[1].childNodes[0].nodeValue;
+			
+			opt = document.createElement('option');
+		    opt.value = id;
+		    opt.innerHTML = name;
+		    select.appendChild(opt);
+		  }
+	  })
+	  .catch(error => console.log('error', error));
+}
+
+function loadVendors()
+{	
+	removeOptions(document.getElementById('vendors'));
+	var opt;
+	size = document.getElementById('sizes').value
+	weight = document.getElementById('weights').value
+	
+	var myHeaders = new Headers();
+	myHeaders.append("SOAPAction", "\"\"");
+	myHeaders.append("Content-Type", "text/plain");
+
+	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+	    			<Body>
+    	    			<getAllVendor xmlns="http://mainpkg">
+        	   				<SizeID>${size}</SizeID>
+        	    			<WeightID>${weight}</WeightID>
+        				</getAllVendor>
+    				</Body>
+				</Envelope>`
+		
+	var requestOptions = {
+	  method: 'POST',
+	  headers: myHeaders,
+	  body: raw,
+	  redirect: 'follow'
+	};
+
+	fetch("http://localhost:8080/paper/services/GetAllVendors", requestOptions)
+	  .then(response => response.text())
+	  .then(result => {
+		  var xml = parseXML(result);
+		  var select = document.getElementById('vendors');
+		  var numberOfWeights = xml.getElementsByTagName('getAllVendorReturn').length;
+		  for(i = 0; i < numberOfWeights; i++)
+		  {
+			var id = xml.getElementsByTagName('getAllVendorReturn')[i].childNodes[0].childNodes[0].nodeValue;
+			var name = xml.getElementsByTagName('getAllVendorReturn')[i].childNodes[1].childNodes[0].nodeValue;
+			
+			opt = document.createElement('option');
+		    opt.value = id;
+		    opt.innerHTML = name;
+		    select.appendChild(opt);
+		  }
+	  })
+	  .catch(error => console.log('error', error));
+}
+
+function createPurchaseOrder(){
+	
+	
+	validateValues();
+
+	
+	size = document.getElementById('sizes').value
+	weight = document.getElementById('weights').value
+	vendor = document.getElementById('vendors').value
+	quan = document.getElementById('Quantity').value
+	
+	var myHeaders = new Headers();
+	myHeaders.append("SOAPAction", "\"\"");
+	myHeaders.append("Content-Type", "text/plain");
+
+	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+   					<Body>
+        				<createPurchaseOrder xmlns="http://mainpkg">
+            				<SizeID>${size}</SizeID>
+            				<WeightID>${weight}</WeightID>
+            				<VendorID>${vendor}</VendorID>
+            				<Quantity>${quan}</Quantity>
+        				</createPurchaseOrder>
+    				</Body>
+				</Envelope>`
+		
+	var requestOptions = {
+	  method: 'POST',
+	  headers: myHeaders,
+	  body: raw,
+	  redirect: 'follow'
+	};
+
+	fetch("http://localhost:8080/paper/services/PlaceOrder", requestOptions)
+	  .then(response => response.text())
+	  .then(result => {
+		  console.log(result);
+		  var xml = parseXML(result);
+		  
+		  document.getElementById('first').remove();
+		  document.getElementById('second').removeAttribute('hidden'); 
+		  document.getElementById('placedorder').innerText = document.getElementById('placedorder').innerText + ' ' + xml.getElementsByTagName('createPurchaseOrderReturn')[0].childNodes[0].nodeValue;       
+
+	  })
+	  .catch(error => console.log('error', error));
+	insertRecievedOrder();
+}
+
+function insertRecievedOrder(){
+	
+	size = document.getElementById('sizes').value
+	weight = document.getElementById('weights').value
+	vendor = document.getElementById('vendors').value
+	
+	var myHeaders = new Headers();
+	myHeaders.append("SOAPAction", "\"\"");
+	myHeaders.append("Content-Type", "text/plain");
+
+	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <insertRecieveOrder xmlns="http://mainpkg">
+        <SizeID>${size}</SizeID>
+		<WeightID>${weight}</WeightID>
+		<VendorID>${vendor}</VendorID>
+        </insertRecieveOrder>
+    </Body>
+</Envelope>`
+		
+	var requestOptions = {
+	  method: 'POST',
+	  headers: myHeaders,
+	  body: raw,
+	  redirect: 'follow'
+	};
+
+	fetch("http://localhost:8080/paper/services/Recieveorder", requestOptions)
+	  .then(response => response.text())
+	  .then(result => console.log(result))
+	  .catch(error => console.log('error', error));
+}
+
+</script>
+</html>
