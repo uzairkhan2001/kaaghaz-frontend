@@ -219,7 +219,8 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
   let tdbutton2 = document.createElement('button');
     tdbutton2.innerText ="View";
     tdbutton2.setAttribute("id",purchaseId);
-    tdbutton2.setAttribute("onCLick", "redirect(this.id)");
+    tdbutton2.setAttribute("onCLick", "");
+//  tdbutton2.setAttribute("onCLick", "redirect(this.id)");
     tdbutton2.setAttribute("class", "edit");
     td10.appendChild(br1);
     td10.appendChild(br2);
@@ -231,10 +232,10 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
 	tbody.appendChild(br);
 }
 
-function redirect(pid){
+// function redirect(pid){
   
-    window.location.href = 'http://localhost:8080/paperInterface/Reports.html?pid='+pid;
-}
+//     window.location.href = 'http://localhost:8080/paperInterface/Reports.html?pid='+pid;
+// }
 
 
 function createForm(purchaseId){
