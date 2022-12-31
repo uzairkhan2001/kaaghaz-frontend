@@ -59,7 +59,8 @@
 <table class="tableData">  
   <thead>  
     <tr>  
-      <th> Purchase ID </th>  
+      <th> Purchase ID </th> 
+      <th> Raw Material </th> 
       <th> Size </th>  
       <th> Weight </th>  
       <th> Vendor </th>  
@@ -135,21 +136,22 @@ fetch("http://localhost:8080/paper/services/GetAllRecievedRecords", requestOptio
 		  for(i = 0; i < numberOfRecords; i++){
 			  
 			  	var purchaseId = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[0].childNodes[0].nodeValue;
-					var size = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[1].childNodes[0].nodeValue;
-					var weight = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[2].childNodes[0].nodeValue;
-					var vendor = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[3].childNodes[0].nodeValue;
-					var total_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[4].childNodes[0].nodeValue;
-					var receive_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[5].childNodes[0].nodeValue;
-					var damage_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[6].childNodes[0].nodeValue;
+					var raw = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[1].childNodes[0].nodeValue;
+          var size = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[2].childNodes[0].nodeValue;
+					var weight = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[3].childNodes[0].nodeValue;
+					var vendor = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[4].childNodes[0].nodeValue;
+					var total_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[5].childNodes[0].nodeValue;
+					var receive_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[6].childNodes[0].nodeValue;
+					var damage_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[7].childNodes[0].nodeValue;
          	var remain_Quan = total_Quan - receive_Quan - damage_Quan;
 
-					additem(purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan,purchaseId);
+					additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan,purchaseId);
 		  }
 	  })
 	  .catch(error => console.log('error', error));
 }
 
-function additem(purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan,purchaseId){
+function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan,purchaseId){
 
   var tbody = document.getElementById('receiveRecord');
 
@@ -167,16 +169,18 @@ function additem(purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Qu
 	let td7=document.createElement('td');
  	let td8=document.createElement('td');
   let td9=document.createElement('td');
+  let td10=document.createElement('td')
   
 	td1.innerHTML="PID"+purchaseId;
-	td2.innerHTML=size;
-	td3.innerHTML=weight;
-	td4.innerHTML=vendor;
-	td5.innerHTML=total_Quan;
-	td6.innerHTML=receive_Quan;
-	td7.innerHTML=damage_Quan;
-	td8.innerHTML=remain_Quan;
-  td8.setAttribute("id","rem" + purchaseId);
+	td2.innerHTML=raw;
+  td3.innerHTML=size;
+	td4.innerHTML=weight;
+	td5.innerHTML=vendor;
+	td6.innerHTML=total_Quan;
+	td7.innerHTML=receive_Quan;
+	td8.innerHTML=damage_Quan;
+	td9.innerHTML=remain_Quan;
+  td9.setAttribute("id","rem" + purchaseId);
   
   
 	trow.appendChild(td1);
@@ -187,12 +191,13 @@ function additem(purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Qu
 	trow.appendChild(td6);
 	trow.appendChild(td7);
   trow.appendChild(td8);
+  trow.appendChild(td9);
 
   var buttonText;
 
   if(remain_Quan == 0)
   {
-    td9.innerHTML = "Completed";
+    td10.innerHTML = "Completed";
   }
   else
   {  if (remain_Quan < total_Quan)
@@ -209,19 +214,19 @@ function additem(purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Qu
     tdbutton.setAttribute("id","rcv" + purchaseId);
     tdbutton.setAttribute("onCLick", "openForm(this.id)");
     tdbutton.setAttribute("class", "edit");
-    td9.appendChild(tdbutton);
+    td10.appendChild(tdbutton);
   }
   let tdbutton2 = document.createElement('button');
     tdbutton2.innerText ="View";
     tdbutton2.setAttribute("id",purchaseId);
     tdbutton2.setAttribute("onCLick", "redirect(this.id)");
     tdbutton2.setAttribute("class", "edit");
-    td9.appendChild(br1);
-    td9.appendChild(br2);
-    td9.appendChild(tdbutton2);
+    td10.appendChild(br1);
+    td10.appendChild(br2);
+    td10.appendChild(tdbutton2);
 
 
-  trow.appendChild(td9);
+  trow.appendChild(td10);
   tbody.appendChild(trow);
 	tbody.appendChild(br);
 }

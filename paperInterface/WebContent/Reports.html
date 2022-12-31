@@ -159,13 +159,13 @@ if (typeof window.DOMParser != "undefined") {
 }
 
 window.onload = (e) =>{
-    const params = new Proxy(new URLSearchParams(window.location.search), {
-        get: (searchParams, prop) => searchParams.get(prop),
-    });
-    var pid =parseInt( params.pid);
-    console.log(pid);
+    // const params = new Proxy(new URLSearchParams(window.location.search), {
+    //     get: (searchParams, prop) => searchParams.get(prop),
+    // });
+    // var pid =parseInt( params.pid);
+    // console.log(pid);
     
-    viewRORepoByPid(pid);
+    // viewRORepoByPid(pid);
         
     
 	console.log("Page has been loaded");

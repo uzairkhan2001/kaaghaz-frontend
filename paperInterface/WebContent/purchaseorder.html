@@ -63,7 +63,7 @@ body{
 		<div class="user-box">
 			<label>Category:</label>
 			<br> <br> 
-			<select id="Category" onchange="">
+			<select id="Category" onchange="loadSizes()">
 				<option value="0">Select a category</option>
 				<option value="1">Papers</option>
 				<option value="2">Title Card</option>
@@ -159,26 +159,34 @@ function removeOptions(selectElement) {
 	   }
 }
 
-function getAllSizes(){
+function loadSizes(){
+
+	removeOptions(document.getElementById('sizes'));
+	var category;
+	category = document.getElementById('Category').value
+
 	var myHeaders = new Headers();
-	myHeaders.append("SOAPAction", "\"\"");
-	myHeaders.append("Content-Type", "text/plain");
+myHeaders.append("SOAPAction", "\"\"");
+myHeaders.append("Content-Type", "application/xml");
 
-	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-    	<Body>
-        	<getAllSizeID xmlns="http://mainpkg"/>
-    	</Body>
-	</Envelope>`
-	var requestOptions = {
-	  method: 'POST',
-	  headers: myHeaders,
-	  body: raw,
-	  redirect: 'follow'
-	};
+var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <getAllSizeID xmlns="http://mainpkg">
+            <rawid>${category}</rawid>
+        </getAllSizeID>
+    </Body>
+</Envelope>`
 
-	fetch("http://localhost:8080/paper/services/GetAllSizes", requestOptions)
-	  .then(response => response.text())
-	  .then(result => {
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("http://localhost:8080/paper/services/GetAllSizes", requestOptions)
+	.then(response => response.text())
+	.then(result => {
 			  var xml = parseXML(result);
 			  var select = document.getElementById('sizes');
 			  var numberOfSizes = xml.getElementsByTagName('getAllSizeIDReturn').length;
