@@ -197,8 +197,11 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
 
   if(remain_Quan == 0)
   {
-    td10.innerHTML = "Completed";
+    td10.innerHTML = "COMPLETED!";
+    td10.setAttribute("style", "color: #26c406;");
+    td10.style.fontWeight= "bold"
   }
+  
   else
   {  if (remain_Quan < total_Quan)
     {
@@ -213,14 +216,16 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
     tdbutton.innerText = buttonText;
     tdbutton.setAttribute("id","rcv" + purchaseId);
     tdbutton.setAttribute("onCLick", "openForm(this.id)");
+    tdbutton.setAttribute("style", "background-color: #26c406;");
     tdbutton.setAttribute("class", "edit");
     td10.appendChild(tdbutton);
   }
   let tdbutton2 = document.createElement('button');
-    tdbutton2.innerText ="View";
+    tdbutton2.innerText ="View History";
     tdbutton2.setAttribute("id",purchaseId);
-    tdbutton2.setAttribute("onCLick", "");
-//  tdbutton2.setAttribute("onCLick", "redirect(this.id)");
+//  tdbutton2.setAttribute("onCLick", "");
+    tdbutton2.setAttribute("onCLick", "redirect(this.id)");
+    tdbutton2.setAttribute("style", "background-color: #cf7d11;");
     tdbutton2.setAttribute("class", "edit");
     td10.appendChild(br1);
     td10.appendChild(br2);
@@ -232,10 +237,10 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
 	tbody.appendChild(br);
 }
 
-// function redirect(pid){
+function redirect(pid){
   
-//     window.location.href = 'http://localhost:8080/paperInterface/Reports.html?pid='+pid;
-// }
+    window.location.href = 'http://localhost:8080/paperInterface/Reports.html?pid='+pid;
+}
 
 
 function createForm(purchaseId){
@@ -337,7 +342,7 @@ function openForm(purchaseId) {
 function validateValues(pid) {
 	var intct = parseInt(document.getElementById("intact").value);
   var dmge = parseInt(document.getElementById("damage").value);
-  error = "Invalid Input"
+  error = "Quantity exceed from Remaining Quantity!"
   var tqty=intct+dmge;
   var myHeaders = new Headers();
   myHeaders.append("SOAPAction", "\"\"");

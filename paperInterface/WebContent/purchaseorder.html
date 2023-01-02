@@ -134,7 +134,7 @@ if (typeof window.DOMParser != "undefined") {
 
 window.onload = (e) =>{
 	console.log("Page has been loaded");
-	getAllSizes();
+	loadSizes();
 	loadWeights();
 	loadVendors();
 	
@@ -301,7 +301,7 @@ function createPurchaseOrder(){
 	
 	validateValues();
 
-	
+	raw = document.getElementById('Category').value
 	size = document.getElementById('sizes').value
 	weight = document.getElementById('weights').value
 	vendor = document.getElementById('vendors').value
@@ -314,6 +314,7 @@ function createPurchaseOrder(){
 	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
    					<Body>
         				<createPurchaseOrder xmlns="http://mainpkg">
+							<rawID>${raw}</rawID>
             				<SizeID>${size}</SizeID>
             				<WeightID>${weight}</WeightID>
             				<VendorID>${vendor}</VendorID>

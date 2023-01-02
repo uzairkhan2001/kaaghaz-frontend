@@ -66,19 +66,20 @@
     <br>
     <ul>
         <li>
-            <button class="btn" type="button" onclick="viewPORepo()">Purchase Order Report</button>
+            <button class="btn" type="button" onclick="viewPORepo()">View Purchase Orders</button>
         </li>
         <li>
-            <button class="btn" type="button" onclick="viewRORepo()">Received Order Report</button>
+            <button class="btn" type="button" onclick="viewRORepo()">View Inventory Receipts</button>
         </li>
+        <br>
         <li>
-            <button class="btn" type="button" onclick="closeRepo()">Close All Reports</button>
+            <button class="btn" type="button" onclick="closeRepo()">Close All Views</button>
         </li>
     </ul>
 </div>
 <br>
 <br>
-<div id = "ROReportbypid" >
+<div id = "ROReportbypid" hidden="hidden">
     <h1 class="head1">Received Inventory</h1>
     <label id="pid"></label>
     <table class="tableData">  
@@ -164,14 +165,18 @@ window.onload = (e) =>{
     // });
     // var pid =parseInt( params.pid);
     // console.log(pid);
+    // if(pid=='*'){
+    //     viewRORepo();
+    // }
+    // else{
+    //     viewRORepoByPid(pid);
+    // }
     
-    // viewRORepoByPid(pid);
         
     
 	console.log("Page has been loaded");
 	
-	getPOReport();
-    getROReport();
+	
 }
 
 function getPOReport(){
@@ -250,10 +255,7 @@ tbody.appendChild(trow);
 tbody.appendChild(br);
 }
 
-function viewPORepo(){
-    document.getElementById("POReport").removeAttribute("hidden");
-    document.getElementById("ROReport").setAttribute("hidden","hidden");
-}
+
 
 function getROReport(){
     var myHeaders = new Headers();
@@ -343,7 +345,7 @@ function additemRO(receiveId,purchaseId,size,weight,vendor,total_Quan,receive_Qu
 	tbody.appendChild(br);
 }
 
-function viewRORepoByPid(pid){
+function getRORepoByPid(pid){
     
     var pid1 = pid;
     var myHeaders = new Headers();
@@ -429,13 +431,32 @@ function additemROPid(receiveId,size,weight,vendor,total_Quan,receive_Quan,damag
 	tbody.appendChild(br);
 }
 
+function viewRORepoByPid(pid){
+    getRORepoByPid(pid);
+    
+    document.getElementById("ROReportbypid").removeAttribute("hidden");
+    document.getElementById("ROReport").setAttribute("hidden","hidden");
+    document.getElementById("POReport").setAttribute("hidden","hidden");
+}
+
+function viewPORepo(){
+    getPOReport();
+    
+    document.getElementById("POReport").removeAttribute("hidden");
+    document.getElementById("ROReport").setAttribute("hidden","hidden");
+    document.getElementById("ROReportbypid").setAttribute("hidden","hidden");
+}
 function viewRORepo(){
+    getROReport();
+
     document.getElementById("ROReport").removeAttribute("hidden");
     document.getElementById("POReport").setAttribute("hidden","hidden");
+    document.getElementById("ROReportbypid").setAttribute("hidden","hidden");
 }
 function closeRepo(){
     document.getElementById("POReport").setAttribute("hidden","hidden");
     document.getElementById("ROReport").setAttribute("hidden","hidden");
+    document.getElementById("ROReportbypid").setAttribute("hidden","hidden");
 }
 </script>
 </html>

@@ -263,7 +263,6 @@
   border: none; 
   padding: 5px 10px;  
   cursor: pointer;  
-  background: #2199e8;  
   color: #ffffff;  
  
 }  
@@ -336,6 +335,27 @@ th { color: #03e9f4; }
               0 0 25px #03e9f4,
               0 0 50px #03e9f4,
               0 0 100px #03e9f4;
+}
+.RepoBtns .closebtn{
+  background:  #03e9f4;
+  padding: 10px 20px;
+  color: rgba(0,0,0,.5);
+  font-size: 16px;
+  text-decoration: none;
+  text-transform: uppercase;
+  overflow: hidden;
+  transition: .5s;
+  margin-top: 15px;
+  letter-spacing: 4px
+}
+.RepoBtns .closebtn:hover {
+  background: #fff;
+  color: #03e9f4;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #fff,
+              0 0 25px #fff,
+              0 0 50px #fff,
+              0 0 100px #fff;
 }
 .RepoBtns h2{
   margin-top: 50px;;
