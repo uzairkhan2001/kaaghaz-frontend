@@ -158,6 +158,8 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
   let br = document.createElement("br");
   let br1 = document.createElement('br');
   let br2 = document.createElement('br');
+  let br3 = document.createElement('br');
+  let br4 = document.createElement('br');
 
 	let trow=document.createElement("tr");
 	let td1=document.createElement('td');
@@ -220,6 +222,7 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
     tdbutton.setAttribute("class", "edit");
     td10.appendChild(tdbutton);
   }
+
   let tdbutton2 = document.createElement('button');
     tdbutton2.innerText ="View History";
     tdbutton2.setAttribute("id",purchaseId);
@@ -227,10 +230,23 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
     tdbutton2.setAttribute("onCLick", "redirect(this.id)");
     tdbutton2.setAttribute("style", "background-color: #cf7d11;");
     tdbutton2.setAttribute("class", "edit");
+
+
+    let tdbutton3 = document.createElement('button');
+    tdbutton3.innerText ="Place Printing";
+    tdbutton3.setAttribute("id",purchaseId);
+//  tdbutton2.setAttribute("onCLick", "");
+    tdbutton3.setAttribute("onCLick", "redirect2(this.id)");
+    tdbutton3.setAttribute("style", "background-color: #26c406;");
+    tdbutton3.setAttribute("class", "edit");
+
     td10.appendChild(br1);
     td10.appendChild(br2);
-    td10.appendChild(tdbutton2);
+    td10.appendChild(tdbutton3);
 
+    td10.appendChild(br3);
+    td10.appendChild(br4);
+    td10.appendChild(tdbutton2);
 
   trow.appendChild(td10);
   tbody.appendChild(trow);
@@ -240,6 +256,11 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
 function redirect(pid){
   
     window.location.href = 'http://localhost:8080/paperInterface/Reports.html?pid='+pid;
+}
+
+function redirect2(pid){
+  
+  window.location.href = 'http://localhost:8080/paperInterface/Reports.html?pid='+pid;
 }
 
 
