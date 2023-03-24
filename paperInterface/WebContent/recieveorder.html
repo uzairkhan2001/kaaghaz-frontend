@@ -10,6 +10,14 @@
       margin: 0%;
       padding: 0%;
     }
+    .bdy    {  
+          font-family: 'Montserrat', sans-serif;  
+          text-align: center;  
+          background-color: rgb(63,72,83);  
+          font-family: sans-serif;  
+          color: rgb(5, 5, 5);  
+          overflow-x: hidden;  
+        } 
     * {
           box-sizing: border-box;
      }
@@ -17,9 +25,9 @@
     font-family: 'Montserrat', sans-serif;  
       text-align: center;  
       background-color: rgb(63,72,83);  
-      font-family: sans-serif;  
-      color: rgb(5, 5, 5);  
-      overflow-x: hidden;  
+      font-family: sans-serif;
+      color: rgb(5, 5, 5);
+      overflow-x: hidden; 
 }
 .topnav {
   overflow: hidden;
@@ -51,12 +59,30 @@
 <div class="topnav">
     <a class="active" href="http://localhost:8080/paperInterface/homepage.html">Home</a>
     <a href="http://localhost:8080/paperInterface/recieveorder.html">Inventory</a>
-    <a href="http://localhost:8080/paperInterface/Reports.html">Report</a>
     <a href="#about">About</a>
 </div>
+<div class="bdy">
+<div class="RepoBtns">
+
+  <h2>Existing Purchase Orders</h2>
+  <br>
+  <br>
+  <ul>
+      <li>
+          <button class="btn" type="button" onclick="getPendingRecRecords()">Pending Purchases</button>
+      </li>
+      <li>
+          <button class="btn" type="button" onclick="getCompletedRecRecords()">Completed Purchases</button>
+      </li>
+      <br>
+      <li>
+          <button class="btn" type="button" onclick="getAllRecievedRecord()">All Purchases</button>
+      </li>
+  </ul>
+</div>      
 <div class="tble">
-<h1 class="head1">Received Inventory</h1>
-<table class="tableData">  
+<h1 class="head1">Purchase Orders</h1>
+<table class="tableData" id="myTable">  
   <thead>  
     <tr>  
       <th> Purchase ID </th> 
@@ -68,6 +94,7 @@
       <th> Received Intact </th>  
       <th> Received Damage </th>  
       <th> Remaining Quantity </th> 
+      <th> Time </th> 
       <th> Status </th>  
     </tr>   
   </thead> 
@@ -79,6 +106,7 @@
   </div>
 </div>
 <label class="lbl" hidden="hidden">Please Insert Valid Quantity!</label>
+</div>
 </div>
 </body>
 <script type="text/javascript">
@@ -106,8 +134,110 @@ window.onload = (e) =>{
 	getAllRecievedRecord();
 	// createForm();
 }
+function removeRows() {
+      var table = document.getElementById("receiveRecord");
+      var rowCount = table.rows.length;
+      // Start from the last row to avoid issues with changing indices.
+      for (var i = rowCount - 1; i >= 0; i--) {
+        table.deleteRow(i);
+      }
+      table.innerHTML = table.innerHTML.replace(/<br>/g, "");
+    }
+
+
+function getCompletedRecRecords(){
+  removeRows();
+  var myHeaders = new Headers();
+  myHeaders.append("SOAPAction", "\"\"");
+  myHeaders.append("Content-Type", "application/xml");
+
+  var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <getAllCompletedRecRecords xmlns="http://mainpkg"/>
+    </Body>
+</Envelope>`
+
+  var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+   };
+  fetch("http://localhost:8080/paper/services/GetAllCompletedRecRecords", requestOptions)
+  .then(response => response.text())
+  .then(result =>  {
+			
+		  var xml = parseXML(result);
+		  var tbody = document.getElementById('receiveRecord');
+		  var numberOfRecords = xml.getElementsByTagName('getAllCompletedRecRecordsReturn').length;
+		
+		  for(i = 0; i < numberOfRecords; i++){
+			  
+			  	var purchaseId = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[0].childNodes[0].nodeValue;
+					var raw = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[1].childNodes[0].nodeValue;
+          var size = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[2].childNodes[0].nodeValue;
+					var weight = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[3].childNodes[0].nodeValue;
+					var vendor = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[4].childNodes[0].nodeValue;
+					var total_Quan = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[5].childNodes[0].nodeValue;
+					var receive_Quan = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[6].childNodes[0].nodeValue;
+					var damage_Quan = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[7].childNodes[0].nodeValue;
+          var time = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[8].childNodes[0].nodeValue;
+         	
+          var remain_Quan = total_Quan - receive_Quan - damage_Quan;
+
+					additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,time,remain_Quan,purchaseId);
+		  }
+	  })
+  .catch(error => console.log('error', error));
+}
+function getPendingRecRecords(){
+  removeRows();
+  var myHeaders = new Headers();
+myHeaders.append("SOAPAction", "\"\"");
+myHeaders.append("Content-Type", "application/xml");
+
+var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <getAllPendingRecRecords xmlns="http://mainpkg"/>
+    </Body>
+</Envelope>`
+
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("http://localhost:8080/paper/services/GetAllPendingRecRecords", requestOptions)
+  .then(response => response.text())
+  .then(result =>  {
+			
+		  var xml = parseXML(result);
+		  var tbody = document.getElementById('receiveRecord');
+		  var numberOfRecords = xml.getElementsByTagName('getAllPendingRecRecordsReturn').length;
+		
+		  for(i = 0; i < numberOfRecords; i++){
+			  
+			  	var purchaseId = xml.getElementsByTagName('getAllPendingRecRecordsReturn')[i].childNodes[0].childNodes[0].nodeValue;
+					var raw = xml.getElementsByTagName('getAllPendingRecRecordsReturn')[i].childNodes[1].childNodes[0].nodeValue;
+          var size = xml.getElementsByTagName('getAllPendingRecRecordsReturn')[i].childNodes[2].childNodes[0].nodeValue;
+					var weight = xml.getElementsByTagName('getAllPendingRecRecordsReturn')[i].childNodes[3].childNodes[0].nodeValue;
+					var vendor = xml.getElementsByTagName('getAllPendingRecRecordsReturn')[i].childNodes[4].childNodes[0].nodeValue;
+					var total_Quan = xml.getElementsByTagName('getAllPendingRecRecordsReturn')[i].childNodes[5].childNodes[0].nodeValue;
+					var receive_Quan = xml.getElementsByTagName('getAllPendingRecRecordsReturn')[i].childNodes[6].childNodes[0].nodeValue;
+					var damage_Quan = xml.getElementsByTagName('getAllPendingRecRecordsReturn')[i].childNodes[7].childNodes[0].nodeValue;
+          var time = xml.getElementsByTagName('getAllPendingRecRecordsReturn')[i].childNodes[8].childNodes[0].nodeValue;
+         	var remain_Quan = total_Quan - receive_Quan - damage_Quan;
+
+					additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,time,remain_Quan,purchaseId);
+		  }
+	  })
+	  .catch(error => console.log('error', error));
+}
 
 function getAllRecievedRecord(){
+  removeRows();
 	var myHeaders = new Headers();
 	myHeaders.append("SOAPAction", "\"\"");
 	myHeaders.append("Content-Type", "text/plain");
@@ -143,15 +273,16 @@ fetch("http://localhost:8080/paper/services/GetAllRecievedRecords", requestOptio
 					var total_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[5].childNodes[0].nodeValue;
 					var receive_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[6].childNodes[0].nodeValue;
 					var damage_Quan = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[7].childNodes[0].nodeValue;
+          var time = xml.getElementsByTagName('getAllRecievedRecordsReturn')[i].childNodes[8].childNodes[0].nodeValue;
          	var remain_Quan = total_Quan - receive_Quan - damage_Quan;
 
-					additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan,purchaseId);
+					additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,time,remain_Quan,purchaseId);
 		  }
 	  })
 	  .catch(error => console.log('error', error));
 }
 
-function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan,purchaseId){
+function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,time,remain_Quan,purchaseId){
 
   var tbody = document.getElementById('receiveRecord');
 
@@ -171,6 +302,7 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
 	let td7=document.createElement('td');
  	let td8=document.createElement('td');
   let td9=document.createElement('td');
+  let td11=document.createElement('td');
   let td10=document.createElement('td')
   
 	td1.innerHTML="PID"+purchaseId;
@@ -180,10 +312,12 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
 	td5.innerHTML=vendor;
 	td6.innerHTML=total_Quan;
 	td7.innerHTML=receive_Quan;
+  td7.setAttribute("id", "rec"  + purchaseId);
 	td8.innerHTML=damage_Quan;
+  td8.setAttribute("id", "dmg"  + purchaseId);
 	td9.innerHTML=remain_Quan;
   td9.setAttribute("id","rem" + purchaseId);
-  
+  td11.innerHTML=time;
   
 	trow.appendChild(td1);
 	trow.appendChild(td2);
@@ -194,6 +328,7 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
 	trow.appendChild(td7);
   trow.appendChild(td8);
   trow.appendChild(td9);
+  trow.appendChild(td11);
 
   var buttonText;
 
@@ -225,7 +360,7 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
 
   let tdbutton2 = document.createElement('button');
     tdbutton2.innerText ="View History";
-    tdbutton2.setAttribute("id",purchaseId);
+    tdbutton2.setAttribute("id","vhs" + purchaseId);
 //  tdbutton2.setAttribute("onCLick", "");
     tdbutton2.setAttribute("onCLick", "redirect(this.id)");
     tdbutton2.setAttribute("style", "background-color: #cf7d11;");
@@ -234,7 +369,7 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
 
     let tdbutton3 = document.createElement('button');
     tdbutton3.innerText ="Place Printing";
-    tdbutton3.setAttribute("id",purchaseId);
+    tdbutton3.setAttribute("id","ppr" + purchaseId);
     tdbutton3.setAttribute("onCLick", "openPrintForm(this.id)");
     tdbutton3.setAttribute("style", "background-color: #26c406;");
     tdbutton3.setAttribute("class", "edit");
@@ -254,7 +389,7 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
 
 function redirect(pid){
   
-    window.location.href = 'http://localhost:8080/paperInterface/Reports.html?pid='+pid;
+    window.location.href = 'http://localhost:8080/paperInterface/receive_raw_material_history.html?pid='+pid;
 }
 
 
@@ -299,7 +434,7 @@ damage.placeholder = "Quantity"
 
 //create a button
 let insert = document.createElement('button');
-insert.innerText = "Insert";
+insert.innerText = "Submit";
 insert.type = "button";
 insert.setAttribute("class",'save');
 insert.setAttribute("id", "ins" + purchaseId);
@@ -363,6 +498,9 @@ let br2 = document.createElement("br");
 let br3 = document.createElement("br");
 let br4 = document.createElement("br");
 let br5 = document.createElement("br");
+let br6 = document.createElement("br");
+let br7 = document.createElement("br");
+let br8 = document.createElement("br");
 
 var f = document.createElement('form');
 f.setAttribute("class","formContainer");
@@ -374,15 +512,24 @@ h.textContent = "PRINTING JOB";
 var label1 = document.createElement('label');
 label1.innerHTML = "PURCHASE ID: "+purchaseId;
 
-const label2 = document.createElement('label');
-label2.textContent = "Send to Printing Job:";
-
 //create input element 1
 var quantity = document.createElement('input');
 quantity.type = "number";
 quantity.name = "pj";
 quantity.id = "print";
 quantity.placeholder = "Quantity"
+ 
+//create dropdown for vendor
+
+var select = document.createElement('select');
+select.setAttribute("id", "vendors");
+select.setAttribute("class", "user-box");
+select.setAttribute("onCLick", loadVendor());
+var opt = document.createElement('option');
+opt.text = "Select Vendor";
+opt.value = "0";
+
+select.add(opt);
 
 //create a button
 let send = document.createElement('button');
@@ -404,7 +551,10 @@ f.appendChild(h);
 f.appendChild(label1);
 f.appendChild(br1);
 f.appendChild(br5);
-f.appendChild(label2);
+f.appendChild(br7);
+f.appendChild(select);
+f.appendChild(br8);
+f.appendChild(br6);
 f.appendChild(quantity);
 f.appendChild(br2);
 f.appendChild(send);
@@ -434,7 +584,45 @@ function openPrintForm(purchaseId) {
       document.getElementById("popupForm").style.display = "block";
     }
   }
+function loadVendor(){
+  var myHeaders = new Headers();
+myHeaders.append("SOAPAction", "\"\"");
+myHeaders.append("Content-Type", "application/xml");
 
+var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+    <Body>
+        <getAllPrintVendor xmlns="http://mainpkg"/>
+    </Body>
+</Envelope>`
+
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("http://localhost:8080/paper/services/GetAllPrintVendors", requestOptions)
+  .then(response => response.text())
+  .then(
+    (result => {
+			  var xml = parseXML(result);
+			  var select = document.getElementById('vendors');
+			  var numberOfSizes = xml.getElementsByTagName('getAllPrintVendorReturn').length;
+			  for(i = 0; i < numberOfSizes; i++)
+			  {
+				var id = xml.getElementsByTagName('getAllPrintVendorReturn')[i].childNodes[0].childNodes[0].nodeValue;
+				var name = xml.getElementsByTagName('getAllPrintVendorReturn')[i].childNodes[1].childNodes[0].nodeValue;
+				
+				var opt = document.createElement('option');
+			    opt.value = id;
+			    opt.innerHTML = name;
+			    select.appendChild(opt);
+			  }
+		  })
+  )
+  .catch(error => console.log('error', error));
+}
 function closeForm() {
   document.getElementById("popupForm").style.display = "none";
   document.getElementById("popupForm").removeChild(document.getElementById("rcvfrm"));
@@ -474,11 +662,14 @@ var requestOptions = {
   return 1;
 	}
 
-function insertReceive(purchaseId){
-  
-  var pid = purchaseId.substring(3)
-  var intct =document.getElementById("intact").value
-  var dmge = document.getElementById("damage").value
+  function insertReceive(purchaseId){
+    
+    var pid = purchaseId.substring(3)
+    var intct =document.getElementById("intact").value
+    var dmge = document.getElementById("damage").value
+    var intact = parseInt(document.getElementById("rec" + pid).innerHTML);
+    var damaged = parseInt(document.getElementById("dmg" + pid).innerHTML);
+    var remaining = parseInt(document.getElementById("rem" + pid).innerHTML);
 
   
   res = validateValues(pid);
@@ -512,7 +703,10 @@ var requestOptions = {
 fetch("http://localhost:8080/paper/services/Recieveorder", requestOptions)
   .then(response => response.text())
   .then(result =>
-    { 
+    {
+      document.getElementById("rec" + pid).innerHTML = parseInt(intact) + parseInt(intct);
+      document.getElementById("dmg" + pid).innerHTML = parseInt(damaged) + parseInt(dmge);
+      document.getElementById("rem" + pid).innerHTML = remaining - intct - dmge;
       console.log(result);
       closeForm();
     })
@@ -526,6 +720,7 @@ function sendPrint(purchaseId){
   
   var pid = purchaseId.substring(3)
   var qty =document.getElementById("print").value
+  var ven =document.getElementById("vendors").value
 
   // res = validateValues(pid);
   // if(res == 0){
@@ -542,6 +737,7 @@ var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
         <sendPrintingJob xmlns="http://mainpkg">
             <purchaseID>${pid}</purchaseID>
+            <vendor>${ven}</vendor>
             <qty>${qty}</qty>
         </sendPrintingJob>
     </Body>
