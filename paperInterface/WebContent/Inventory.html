@@ -49,8 +49,8 @@
 </head>
 <body>
     <div class="topnav">
-        <a class="active" href="http://localhost:8080/paperInterface/homepage.html">Home</a>
-        <a href="http://localhost:8080/paperInterface/recieveorder.html">Inventory</a>
+        <a href="http://localhost:8080/paperInterface/homepage.html">Home</a>
+        <a class="active" href="http://localhost:8080/paperInterface/recieveorder.html">Inventory</a>
         <a href="#about">About</a>
     </div>
 <div class="bdy">
@@ -66,7 +66,7 @@
     <br> <br> 
     <select id="Category" onchange="getSummary()">
         <option value="0">Select a category</option>
-        <option value="1">Papers</option>
+        <option value="1">Paper</option>
         <option value="2">Title Card</option>
         <option value="3">Separator Card</option>
     </select>
@@ -107,14 +107,26 @@
     
     window.onload = (e) =>{
         console.log("Page has been loaded");
-        getSummary();
+        //getSummary();
+    }
+
+    function removeRows() {
+      var table = document.getElementById("summary");
+      var rowCount = table.rows.length;
+      // Start from the last row to avoid issues with changing indices.
+      for (var i = rowCount - 1; i >= 0; i--) {
+        table.deleteRow(i);
+      }
+      table.innerHTML = table.innerHTML.replace(/<br>/g, "");
     }
 
 function getSummary(){
-    var category = document.getElementById('Category').innerHTML
+    removeRows();
+    var e = document.getElementById('Category')
+    var category = e.options[e.selectedIndex].text
     var myHeaders = new Headers();
-myHeaders.append("SOAPAction", "\"\"");
-myHeaders.append("Content-Type", "application/xml");
+    myHeaders.append("SOAPAction", "\"\"");
+    myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
@@ -122,7 +134,7 @@ var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
             <raw>${category}</raw>
         </getSummaryOfRawMaterial>
     </Body>
-</Envelope>`
+</Envelope>`;
 
 var requestOptions = {
   method: 'POST',
@@ -136,18 +148,17 @@ fetch("http://localhost:8080/paper/services/GetSummaryOfRawMaterial", requestOpt
   .then(result =>  {
 			
             var xml = parseXML(result);
-            var tbody = document.getElementById('receiveRecord');
-            var numberOfRecords = xml.getElementsByTagName('getAllCompletedRecRecordsReturn').length;
+            var tbody = document.getElementById('summary');
+            var numberOfRecords = xml.getElementsByTagName('getSummaryOfRawMaterialReturn').length;
           
             for(i = 0; i < numberOfRecords; i++){
                 
-                    var raw = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[1].childNodes[0].nodeValue;
-                      var size = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[2].childNodes[0].nodeValue;
-                      var weight = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[3].childNodes[0].nodeValue;
-                      var vendor = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[4].childNodes[0].nodeValue;
-                      var receive_Quan = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[6].childNodes[0].nodeValue;
-                      var damage_Quan = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[7].childNodes[0].nodeValue;
-                      var print_Quan = xml.getElementsByTagName('getAllCompletedRecRecordsReturn')[i].childNodes[7].childNodes[0].nodeValue;
+                    var raw = xml.getElementsByTagName('getSummaryOfRawMaterialReturn')[i].childNodes[0].childNodes[0].nodeValue;
+                      var size = xml.getElementsByTagName('getSummaryOfRawMaterialReturn')[i].childNodes[1].childNodes[0].nodeValue;
+                      var weight = xml.getElementsByTagName('getSummaryOfRawMaterialReturn')[i].childNodes[2].childNodes[0].nodeValue;
+                      var receive_Quan = xml.getElementsByTagName('getSummaryOfRawMaterialReturn')[i].childNodes[3].childNodes[0].nodeValue;
+                      var damage_Quan = xml.getElementsByTagName('getSummaryOfRawMaterialReturn')[i].childNodes[4].childNodes[0].nodeValue;
+                      var print_Quan = xml.getElementsByTagName('getSummaryOfRawMaterialReturn')[i].childNodes[5].childNodes[0].nodeValue;
              
             var remain_Quan = receive_Quan - print_Quan;
   
