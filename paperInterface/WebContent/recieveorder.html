@@ -57,28 +57,25 @@
 </head>
 <body>
 <div class="topnav">
-    <a class="active" href="http://localhost:8080/paperInterface/homepage.html">Home</a>
+    <a href="http://localhost:8080/paperInterface/homepage.html">Home</a>
     <a href="http://localhost:8080/paperInterface/Inventory.html">Inventory</a>
+    <a class="active" href="http://localhost:8080/paperInterface/purchases.html">Purchases</a>
     <a href="#about">About</a>
 </div>
 <div class="bdy">
-<div class="RepoBtns">
-
+<div class="user-box">
+  <div class="RepoBtns">
+    <button class = 'btn' type="button" onclick="history.back()">BACK</button>
+</div>
   <h2>Existing Purchase Orders</h2>
   <br>
   <br>
-  <ul>
-      <li>
-          <button class="btn" type="button" onclick="getPendingRecRecords()">Pending Purchases</button>
-      </li>
-      <li>
-          <button class="btn" type="button" onclick="getCompletedRecRecords()">Completed Purchases</button>
-      </li>
-      <br>
-      <li>
-          <button class="btn" type="button" onclick="getAllRecievedRecord()">All Purchases</button>
-      </li>
-  </ul>
+  <select id="Category" onchange="changeCategory()">
+    <option value="0">Select a category</option>
+    <option value="1">All Purchases</option>
+    <option value="2">Completed Purchases</option>
+    <option value="3">Pending Purchases</option>
+</select>
 </div>      
 <div class="tble">
 <h1 class="head1">Purchase Orders</h1>
@@ -131,7 +128,7 @@ if (typeof window.DOMParser != "undefined") {
 window.onload = (e) =>{
 	console.log("Page has been loaded");
 	
-	getAllRecievedRecord();
+	changeCategory();
 	// createForm();
 }
 function removeRows() {
@@ -144,6 +141,19 @@ function removeRows() {
       table.innerHTML = table.innerHTML.replace(/<br>/g, "");
     }
 
+function changeCategory(){
+    var category = document.getElementById('Category').value
+    if(category==1){
+      getAllRecievedRecord();
+    }
+    else  if(category==2){
+      getCompletedRecRecords();
+    }
+    else  if(category==3){
+      getPendingRecRecords();
+    }
+
+}
 
 function getCompletedRecRecords(){
   removeRows();

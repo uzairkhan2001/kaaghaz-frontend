@@ -10,7 +10,7 @@
     justify-content: center;
     align-items: center;
     scroll-behavior: smooth;
-    background: #131313;
+    background-color: rgb(63,72,83);  
     font-family:'Helvetica Neue', sans-serif;
 }
 
@@ -318,14 +318,20 @@ th { color: #03e9f4; }
 .RepoBtns .btn {
 	background: rgba(0,0,0,.5);
   padding: 10px 20px;
-  color: #000000;
+  color: #03e9f4;
   font-size: 16px;
   text-decoration: none;
   text-transform: uppercase;
   overflow: hidden;
   transition: .5s;
   margin-top: 15px;
-  letter-spacing: 4px
+  margin-left: 15px;
+  letter-spacing: 4px;
+  text-align: left;
+  display: flex;
+  align-items: left;
+  justify-content: left;
+
 }
 
 .RepoBtns .btn:hover {
