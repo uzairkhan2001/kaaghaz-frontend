@@ -329,9 +329,7 @@ th { color: #03e9f4; }
   letter-spacing: 4px;
   text-align: left;
   display: flex;
-  align-items: left;
   justify-content: left;
-
 }
 
 .RepoBtns .btn:hover {
