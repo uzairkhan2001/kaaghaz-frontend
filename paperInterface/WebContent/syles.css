@@ -316,9 +316,9 @@ th { color: #03e9f4; }
   padding-left: 10px;
 }
 .RepoBtns .btn {
-	background: rgba(0,0,0,.5);
+	background: gray;
   padding: 10px 20px;
-  color: #03e9f4;
+  color: white;
   font-size: 16px;
   text-decoration: none;
   text-transform: uppercase;
@@ -334,7 +334,7 @@ th { color: #03e9f4; }
 
 .RepoBtns .btn:hover {
   background: #03e9f4;
-  color: #fff;
+  color: black;
   border-radius: 5px;
   box-shadow: 0 0 5px #03e9f4,
               0 0 25px #03e9f4,
