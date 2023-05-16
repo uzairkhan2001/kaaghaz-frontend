@@ -246,6 +246,7 @@ fetch("http://localhost:8080/paper/services/GetAllPendingRecRecords", requestOpt
 	  .catch(error => console.log('error', error));
 }
 
+
 function getAllRecievedRecord(){
   removeRows();
 	var myHeaders = new Headers();
@@ -292,6 +293,9 @@ fetch("http://localhost:8080/paper/services/GetAllRecievedRecords", requestOptio
 	  .catch(error => console.log('error', error));
 }
 
+
+
+//create body of table 
 function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,time,remain_Quan,purchaseId){
 
   var tbody = document.getElementById('receiveRecord');
@@ -368,42 +372,30 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
     td10.appendChild(tdbutton);
   }
 
-  let tdbutton2 = document.createElement('button');
+    let tdbutton2 = document.createElement('button');
     tdbutton2.innerText ="View History";
     tdbutton2.setAttribute("id","vhs" + purchaseId);
-//  tdbutton2.setAttribute("onCLick", "");
     tdbutton2.setAttribute("onCLick", "redirect(this.id)");
     tdbutton2.setAttribute("style", "background-color: #cf7d11;");
     tdbutton2.setAttribute("class", "edit");
-
-
-    let tdbutton3 = document.createElement('button');
-    tdbutton3.innerText ="Place Printing";
-    tdbutton3.setAttribute("id","ppr" + purchaseId);
-    tdbutton3.setAttribute("onCLick", "openPrintForm(this.id)");
-    tdbutton3.setAttribute("style", "background-color: #26c406;");
-    tdbutton3.setAttribute("class", "edit");
-
-    td10.appendChild(br1);
-    td10.appendChild(br2);
-    td10.appendChild(tdbutton3);
 
     td10.appendChild(br3);
     td10.appendChild(br4);
     td10.appendChild(tdbutton2);
 
-  trow.appendChild(td10);
-  tbody.appendChild(trow);
-	tbody.appendChild(br);
+    trow.appendChild(td10);
+    tbody.appendChild(trow);
+	  tbody.appendChild(br);
 }
 
+//redirect to the page through "view history" buttton on the specific history of Purchase ID
 function redirect(pid){
   
     window.location.href = 'http://localhost:8080/paperInterface/receive_raw_material_history.html?pid='+pid;
 }
 
 
-//receive raw material pop up form
+// create receive purchase order pop up form
 function createForm(purchaseId){
 
 let br1 = document.createElement("br");
@@ -476,6 +468,7 @@ f.appendChild(close);
 document.getElementById('popupForm').appendChild(f); //pure javascript
 }
 
+//open and close form on send or close button
 function openForm(purchaseId) {
     if(document.getElementById("rcvfrm") == null)
     {
@@ -495,150 +488,13 @@ function openForm(purchaseId) {
     }
   }
 
+//close form and remove all previous cache memory
 function closeForm() {
   document.getElementById("popupForm").style.display = "none";
   document.getElementById("popupForm").removeChild(document.getElementById("rcvfrm"));
 }
 
-//Send to print pop up form
-function createPrintForm(purchaseId){
-
-let br1 = document.createElement("br");
-let br2 = document.createElement("br");
-let br3 = document.createElement("br");
-let br4 = document.createElement("br");
-let br5 = document.createElement("br");
-let br6 = document.createElement("br");
-let br7 = document.createElement("br");
-let br8 = document.createElement("br");
-
-var f = document.createElement('form');
-f.setAttribute("class","formContainer");
-f.setAttribute("id", "rcvfrm");
-
-const h = document.createElement('h2');
-h.textContent = "PRINTING JOB";
-
-var label1 = document.createElement('label');
-label1.innerHTML = "PURCHASE ID: "+purchaseId;
-
-//create input element 1
-var quantity = document.createElement('input');
-quantity.type = "number";
-quantity.name = "pj";
-quantity.id = "print";
-quantity.placeholder = "Quantity"
- 
-//create dropdown for vendor
-
-var select = document.createElement('select');
-select.setAttribute("id", "vendors");
-select.setAttribute("class", "user-box");
-select.setAttribute("onCLick", loadVendor());
-var opt = document.createElement('option');
-opt.text = "Select Vendor";
-opt.value = "0";
-
-select.add(opt);
-
-//create a button
-let send = document.createElement('button');
-send.innerText = "Send";
-send.type = "button";
-send.setAttribute("class",'save');
-send.setAttribute("id", "snd" + purchaseId);
-send.setAttribute("onCLick", "sendPrint(this.id)");
-
-//create a button
-let close = document.createElement('button');
-close.innerText = "close";
-close.type = "button";
-close.setAttribute("class",'delete');
-close.setAttribute("onCLick", "closeForm()");
-
-// add all elements to the form
-f.appendChild(h);
-f.appendChild(label1);
-f.appendChild(br1);
-f.appendChild(br5);
-f.appendChild(br7);
-f.appendChild(select);
-f.appendChild(br8);
-f.appendChild(br6);
-f.appendChild(quantity);
-f.appendChild(br2);
-f.appendChild(send);
-f.appendChild(br3);
-f.appendChild(br4);
-f.appendChild(close);
-
-// add the form inside the body
-document.getElementById('popupForm').appendChild(f); //pure javascript
-}
-
-function openPrintForm(purchaseId) {
-    if(document.getElementById("rcvfrm") == null)
-    {
-      let pid;
-
-      if(purchaseId[0] == 'r')
-      {
-        pid = purchaseId.substring(3);
-      }
-      else
-      {
-        pid = purchaseId
-      }
-
-      createPrintForm(pid);
-      document.getElementById("popupForm").style.display = "block";
-    }
-  }
-function loadVendor(){
-  var myHeaders = new Headers();
-myHeaders.append("SOAPAction", "\"\"");
-myHeaders.append("Content-Type", "application/xml");
-
-var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-    <Body>
-        <getAllPrintVendor xmlns="http://mainpkg"/>
-    </Body>
-</Envelope>`
-
-var requestOptions = {
-  method: 'POST',
-  headers: myHeaders,
-  body: raw,
-  redirect: 'follow'
-};
-
-fetch("http://localhost:8080/paper/services/GetAllPrintVendors", requestOptions)
-  .then(response => response.text())
-  .then(
-    (result => {
-			  var xml = parseXML(result);
-			  var select = document.getElementById('vendors');
-			  var numberOfSizes = xml.getElementsByTagName('getAllPrintVendorReturn').length;
-			  for(i = 0; i < numberOfSizes; i++)
-			  {
-				var id = xml.getElementsByTagName('getAllPrintVendorReturn')[i].childNodes[0].childNodes[0].nodeValue;
-				var name = xml.getElementsByTagName('getAllPrintVendorReturn')[i].childNodes[1].childNodes[0].nodeValue;
-				
-				var opt = document.createElement('option');
-			    opt.value = id;
-			    opt.innerHTML = name;
-			    select.appendChild(opt);
-			  }
-		  })
-  )
-  .catch(error => console.log('error', error));
-}
-function closeForm() {
-  document.getElementById("popupForm").style.display = "none";
-  document.getElementById("popupForm").removeChild(document.getElementById("rcvfrm"));
-}
-
-
+//validate value of the sum of receive intact or damage should not be gretter than purchase order value
 function validateValues(pid) {
 	var intct = parseInt(document.getElementById("intact").value);
   var dmge = parseInt(document.getElementById("damage").value);
@@ -672,7 +528,8 @@ var requestOptions = {
   return 1;
 	}
 
-  function insertReceive(purchaseId){
+//it can receive intact and damage
+function insertReceive(purchaseId){
     
     var pid = purchaseId.substring(3)
     var intct =document.getElementById("intact").value
@@ -722,85 +579,6 @@ fetch("http://localhost:8080/paper/services/Recieveorder", requestOptions)
     })
   .catch(error => console.log('error', error));
   }
-}
-
-
-
-function sendPrint(purchaseId){
-  
-  var pid = purchaseId.substring(3)
-  var qty =document.getElementById("print").value
-  var ven =document.getElementById("vendors").value
-
-  // res = validateValues(pid);
-  // if(res == 0){
-  //   closeForm();
-  //   createPrintForm(pid);
-  // }
-  // else
-  // {
-    var myHeaders = new Headers();
-myHeaders.append("SOAPAction", "\"\"");
-myHeaders.append("Content-Type", "application/xml");
-
-var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-    <Body>
-        <sendPrintingJob xmlns="http://mainpkg">
-            <purchaseID>${pid}</purchaseID>
-            <vendor>${ven}</vendor>
-            <qty>${qty}</qty>
-        </sendPrintingJob>
-    </Body>
-</Envelope>`
-
-var requestOptions = {
-  method: 'POST',
-  headers: myHeaders,
-  body: raw,
-  redirect: 'follow'
-};
-
-fetch("http://localhost:8080/paper/services/SendForPrintingJob", requestOptions)
-  .then(response => response.text())
-  .then(result =>
-    { 
-      console.log(result);
-      closeForm();
-    })
-  .catch(error => console.log('error', error));
-// }
-insertPrintingReceive(purchaseId);
-}
-
-function insertPrintingReceive(purchaseId){
-  var myHeaders = new Headers();
-  myHeaders.append("SOAPAction", "\"\"");
-  myHeaders.append("Content-Type", "application/xml");
-
-  var pid = purchaseId.substring(3)
-  var qty =document.getElementById("print").value
-
-  var raw =`<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-    <Body>
-        <insertRecieveOrder xmlns="http://mainpkg">
-            <printID>${pid}</printID>
-            <receive>${qty}</receive>
-        </insertRecieveOrder>
-    </Body>
-</Envelope>`
-
-  var requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: raw,
-    redirect: 'follow'
-  };
-
-  fetch("http://localhost:8080/paper/services/receiveFromPrinting", requestOptions)
-    .then(response => response.text())
-    .then(result => console.log(result))
-    .catch(error => console.log('error', error));
-
 }
 
 function addallitem(id,purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan){
