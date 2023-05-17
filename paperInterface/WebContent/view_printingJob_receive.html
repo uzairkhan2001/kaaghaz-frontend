@@ -64,7 +64,7 @@
     <button class = 'btn' type="button" onclick="history.back()">BACK</button>
     <h2>PRINTING JOB DETAILS</h2>
 </div>
-<div id = "ROReportbypid" hidden="hidden">
+<div id = "ROReportbypid">
     <div class="box-sizing">
             <label>Print ID: </label><label id="pjid"></label><br><br>
             <label>Purchase ID: </label><label id="pid"></label><br><br>
@@ -216,7 +216,7 @@ function PrintingJobDetails(pjid){
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
         <getPrintingJobSummary xmlns="http://mainpkg">
-            <pjid${pjid}</pjid>
+            <pjid>${pjid}</pjid>
         </getPrintingJobSummary>
     </Body>
 </Envelope>`
@@ -233,23 +233,19 @@ fetch("http://localhost:8080/paper/services/GetPrintingJobSummary", requestOptio
   .then(result => {
 			
             var xml = parseXML(result);
-            var numberOfRecords = xml.getElementsByTagName('getPrintingJobSummaryReturn').length;
           
-            for(i = 0; i < numberOfRecords; i++){
-                
-                      var printID = xml.getElementsByTagName('getPrintingJobSummaryReturn')[i].childNodes[0].childNodes[0].nodeValue;
-                      var purchaseID = xml.getElementsByTagName('getPrintingJobSummaryReturn')[i].childNodes[1].childNodes[0].nodeValue;
-                      var raw = xml.getElementsByTagName('getPrintingJobSummaryReturn')[i].childNodes[2].childNodes[0].nodeValue;
-                      var size = xml.getElementsByTagName('getPrintingJobSummaryReturn')[i].childNodes[3].childNodes[0].nodeValue;
-                      var weight = xml.getElementsByTagName('getPrintingJobSummaryReturn')[i].childNodes[4].childNodes[0].nodeValue;
-                      var povendor = xml.getElementsByTagName('getPrintingJobSummaryReturn')[i].childNodes[5].childNodes[0].nodeValue;
-                      var pjvendor = xml.getElementsByTagName('getPrintingJobSummaryReturn')[i].childNodes[6].childNodes[0].nodeValue;
-                      var total_Quan = xml.getElementsByTagName('getPrintingJobSummaryReturn')[i].childNodes[7].childNodes[0].nodeValue;
-                      var receive_Quan = xml.getElementsByTagName('getPrintingJobSummaryReturn')[i].childNodes[8].childNodes[0].nodeValue;
-                      var time = xml.getElementsByTagName('getPrintingJobSummaryReturn')[i].childNodes[9].childNodes[0].nodeValue;
-                      
-            }
+            var printID = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[0].childNodes[0].nodeValue;
+            var purchaseID = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[1].childNodes[0].nodeValue;
+            var raw = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[2].childNodes[0].nodeValue;
+            var size = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[3].childNodes[0].nodeValue;
+            var weight = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[4].childNodes[0].nodeValue;
+            var povendor = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[5].childNodes[0].nodeValue;
+            var pjvendor = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[6].childNodes[0].nodeValue;
+            var total_Quan = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[7].childNodes[0].nodeValue;
+            var receive_Quan = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[8].childNodes[0].nodeValue;
+            var time = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[9].childNodes[0].nodeValue;
             var rem_quan = parseInt(total_Quan) - parseInt(receive_Quan);
+          
             document.getElementById('pjid').innerHTML=printID;
             document.getElementById('pid').innerHTML=purchaseID;
             document.getElementById('size').innerHTML=size;
