@@ -30,7 +30,7 @@
   text-transform: uppercase;
   transform: translateY(200px);
   opacity: 0;
-  animation: 2s slideUp ease forwards .5s;
+  animation: 0.5s slideUp ease forwards 0s;
   position: relative;
 }
 
@@ -323,7 +323,7 @@ th { color: #03e9f4; }
   padding-left: 10px;
 }
 .RepoBtns .btn {
-	background: gray;
+  background: #333;
   padding: 10px 20px;
   color: white;
   font-size: 16px;
