@@ -91,6 +91,7 @@
       <th> Printing Vendor </th>  
       <th> Total Quantity</th>
       <th> Receive Quantity</th>
+      <th> Remaining Quantity</th>
       <th> Status </th>  
     </tr>   
   </thead> 
@@ -169,24 +170,25 @@ fetch("http://localhost:8080/paper/services/ManagePrintingJob", requestOptions)
 		
 		  for(i = 0; i < numberOfRecords; i++){
 
-                    var Id = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[0].childNodes[0].nodeValue;
-			  	    var purchaseId = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[1].childNodes[0].nodeValue;
+          var printId = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[0].childNodes[0].nodeValue;
+          var purchaseId = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[1].childNodes[0].nodeValue;
 					var raw = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[2].childNodes[0].nodeValue;
-                    var size = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
+          var size = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
 					var weight = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[4].childNodes[0].nodeValue;
 					var vendor = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[5].childNodes[0].nodeValue;
 					var printvendor = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[6].childNodes[0].nodeValue;
 					var total_Quan = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[7].childNodes[0].nodeValue;
-                    var receive_Quan = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[8].childNodes[0].nodeValue;
-          
-					additem(Id,purchaseId,raw,size,weight,vendor,printvendor,total_Quan,receive_Quan,purchaseId);
+          var receive_Quan = xml.getElementsByTagName('managePrintingJobReturn')[i].childNodes[8].childNodes[0].nodeValue;
+          var remain_Quan = total_Quan - receive_Quan;
+
+					additem(printId,purchaseId,raw,size,weight,vendor,printvendor,total_Quan,receive_Quan,remain_Quan,printId);
           
 		  }
 	  })
   .catch(error => console.log('error', error));
 }
 
-function additem(Id,purchaseId,raw,size,weight,vendor,printvendor,total_Quan,receive_Quan,purchaseId){
+function additem(printId,purchaseId,raw,size,weight,vendor,printvendor,total_Quan,receive_Quan,remain_Quan,printId){
 
   var tbody = document.getElementById('receiveprintingJob');
 
@@ -201,21 +203,25 @@ function additem(Id,purchaseId,raw,size,weight,vendor,printvendor,total_Quan,rec
 	let td4=document.createElement('td');
 	let td5=document.createElement('td');
 	let td6=document.createElement('td');
-    let td7=document.createElement('td');
+  let td7=document.createElement('td');
 	let td8=document.createElement('td');
 	let td9=document.createElement('td');
-    let td10=document.createElement('td');
+  let td10=document.createElement('td');
+  let td11=document.createElement('td');
   
-	td1.innerHTML="PRID"+Id;
-    td2.innerHTML="PID"+purchaseId;
+	td1.innerHTML="PRID"+printId;
+  td2.innerHTML="PID"+purchaseId;
 	td3.innerHTML=raw;
-    td4.innerHTML=size;
+  td4.innerHTML=size;
 	td5.innerHTML=weight;
 	td6.innerHTML=vendor;
 	td7.innerHTML=printvendor;
-    td8.innerHTML=total_Quan;
+  td8.innerHTML=total_Quan;
+  td8.setAttribute("id", "qua"  + printId);
 	td9.innerHTML=receive_Quan;
-
+  td9.setAttribute("id", "rec"  + printId);
+	td10.innerHTML=remain_Quan;
+  td10.setAttribute("id", "rem"  + printId);
   
 	trow.appendChild(td1);
 	trow.appendChild(td2);
@@ -223,21 +229,22 @@ function additem(Id,purchaseId,raw,size,weight,vendor,printvendor,total_Quan,rec
 	trow.appendChild(td4);
 	trow.appendChild(td5);
 	trow.appendChild(td6);
-    trow.appendChild(td7);
+  trow.appendChild(td7);
 	trow.appendChild(td8);
 	trow.appendChild(td9);
+	trow.appendChild(td10);
 
     var buttonText;
 
-if(total_Quan == 0)
+if(remain_Quan == 0)
 {
-  td10.innerHTML = "COMPLETED!";
-  td10.setAttribute("style", "color: #26c406;");
-  td10.style.fontWeight= "bold"
+  td11.innerHTML = "COMPLETED!";
+  td11.setAttribute("style", "color: #26c406;");
+  td11.style.fontWeight= "bold"
 }
 
 else
-{  if (receive_Quan > total_Quan)
+{  if (remain_Quan < total_Quan)
   {
     buttonText = "Receive More";
   }
@@ -248,35 +255,39 @@ else
 
   let tdbutton = document.createElement('button');
   tdbutton.innerText = buttonText;
-  tdbutton.setAttribute("id","rcv" + purchaseId);
+  tdbutton.setAttribute("id","rcv" + printId);
   tdbutton.setAttribute("onCLick", "openForm(this.id)");
   tdbutton.setAttribute("style", "background-color: #26c406;");
   tdbutton.setAttribute("class", "edit");
-  td10.appendChild(tdbutton);
+  td11.appendChild(tdbutton);
 }
 
     let tdbutton2 = document.createElement('button');
     tdbutton2.innerText ="View History";
-    tdbutton2.setAttribute("id","vhs" + purchaseId);
-//  tdbutton2.setAttribute("onCLick", "");
+    tdbutton2.setAttribute("id","vhs" + printId);
     tdbutton2.setAttribute("onCLick", "redirect(this.id)");
     tdbutton2.setAttribute("style", "background-color: #cf7d11;");
     tdbutton2.setAttribute("class", "edit");
 
    
-    td10.setAttribute("style", "color: #26c406;");
-    td10.style.fontWeight= "bold"
+    td11.setAttribute("style", "color: #26c406;");
+    td11.style.fontWeight= "bold"
 
-    td10.appendChild(br1);
-    td10.appendChild(br2);
-    td10.appendChild(tdbutton2);
-    trow.appendChild(td10);
+    td11.appendChild(br1);
+    td11.appendChild(br2);
+    td11.appendChild(tdbutton2);
+    trow.appendChild(td11);
     tbody.appendChild(trow);
-	tbody.appendChild(br);
+    tbody.appendChild(br);
 }
 
+//
+function redirect(pjid){
+  
+  window.location.href = 'http://localhost:8080/paperInterface/view_printingJob_receive.html?pjid='+pjid;
+}
 //Send to print pop up form
-function createForm(purchaseId){
+function createForm(printId){
 
 let br1 = document.createElement("br");
 let br2 = document.createElement("br");
@@ -291,14 +302,17 @@ f.setAttribute("id", "rcvfrm");
 const h = document.createElement('h2');
 h.textContent = "Received Data";
 
+const h1 = document.createElement('h1');
+h1.textContent = "Printing Job";
+
 var label1 = document.createElement('label');
-label1.innerHTML = "PURCHASE ID: "+purchaseId;
+label1.innerHTML = "PRINT ID: "+printId;
 
 const label2 = document.createElement('label');
 label2.textContent = "Receive Quantity";
 
 //create input element 1
-var intact = document.createElement('input');
+var quan = document.createElement('input');
 quan.type = "number";
 quan.name = "quan";
 quan.id = "quantity";
@@ -309,8 +323,8 @@ let insert = document.createElement('button');
 insert.innerText = "Submit";
 insert.type = "button";
 insert.setAttribute("class",'save');
-insert.setAttribute("id", "ins" + purchaseId);
-insert.setAttribute("onCLick", "insertReceive(this.id)");
+insert.setAttribute("id", "ins" + printId);
+insert.setAttribute("onCLick", "insertPrintingReceive(this.id)");
 
 //create a button
 let close = document.createElement('button');
@@ -320,12 +334,13 @@ close.setAttribute("class",'delete');
 close.setAttribute("onCLick", "closeForm()");
 
 // add all elements to the form
+f.appendChild(h1);
 f.appendChild(h);
 f.appendChild(label1);
 f.appendChild(br1);
 f.appendChild(br5);
 f.appendChild(label2);
-f.appendChild(quantity);
+f.appendChild(quan);
 f.appendChild(br2);
 f.appendChild(insert);
 f.appendChild(br3);
@@ -336,18 +351,18 @@ f.appendChild(close);
 document.getElementById('popupForm').appendChild(f); //pure javascript
 }
 
-function openForm(purchaseId) {
+function openForm(printId) {
     if(document.getElementById("rcvfrm") == null)
     {
       let pid;
 
-      if(purchaseId[0] == 'r')
+      if(printId[0] == 'r')
       {
-        pid = purchaseId.substring(3);
+        pid = printId.substring(3);
       }
       else
       {
-        pid = purchaseId
+        pid = printId
       }
 
       createForm(pid);
@@ -400,58 +415,17 @@ function closeForm() {
   document.getElementById("popupForm").removeChild(document.getElementById("rcvfrm"));
 }
 
-//Send For Printing Button
-function sendPrint(purchaseId){
-  
-  var pid = purchaseId.substring(3)
-  var qty =document.getElementById("print").value
-  var ven =document.getElementById("vendors").value
-
-  // res = validateValues(pid);
-  // if(res == 0){
-  //   closeForm();
-  //   createPrintForm(pid);
-  // }
-  // else
-  // {
-    var myHeaders = new Headers();
-myHeaders.append("SOAPAction", "\"\"");
-myHeaders.append("Content-Type", "application/xml");
-
-var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-    <Body>
-        <sendPrintingJob xmlns="http://mainpkg">
-            <purchaseID>${pid}</purchaseID>
-            <vendor>${ven}</vendor>
-            <qty>${qty}</qty>
-        </sendPrintingJob>
-    </Body>
-</Envelope>`
-
-var requestOptions = {
-  method: 'POST',
-  headers: myHeaders,
-  body: raw,
-  redirect: 'follow'
-};
-
-fetch("http://localhost:8080/paper/services/SendForPrintingJob", requestOptions)
-  .then(response => response.text())
-  .then(result =>
-    { 
-      console.log(result);
-      closeForm();
-    })
-  .catch(error => console.log('error', error));
-}
-
+//receive from printing job
 function insertPrintingReceive(purchaseId){
+
+  var pid = purchaseId.substring(3)
+  var qty =document.getElementById("quantity").value
+  var receive = parseInt(document.getElementById("rec" + pid).innerHTML);
+  var remaining = parseInt(document.getElementById("rem" + pid).innerHTML);
+  
   var myHeaders = new Headers();
   myHeaders.append("SOAPAction", "\"\"");
   myHeaders.append("Content-Type", "application/xml");
-
-  var pid = purchaseId.substring(3)
-  var qty =document.getElementById("print").value
 
   var raw =`<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
@@ -471,15 +445,20 @@ function insertPrintingReceive(purchaseId){
 
   fetch("http://localhost:8080/paper/services/receiveFromPrinting", requestOptions)
     .then(response => response.text())
-    .then(result => console.log(result))
+    .then(result => {
+      document.getElementById("rec" + pid).innerHTML = parseInt(qty) + parseInt(receive);
+      document.getElementById("rem" + pid).innerHTML = remaining - qty;
+      console.log(result);
+      closeForm();
+    })
     .catch(error => console.log('error', error));
 
 }
 
-function addallitem(id,purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan){
+function addallitem(printId,purchaseId,raw,size,weight,vendor,printvendor,total_Quan,receive_Quan,remain_Quan){
 	tbody.innerHTML="";
 	order.forEach(element=>{
-		additem(element.purchaseId,element.size,element.weight,element.vendor,element.total_Quan,element.receive_Quan,element.damage_Quan,element.remain_Quan)
+		additem(element.printId,element.purchaseId,element.raw,element.size,element.weight,element.vendor,element.printvendor,element.total_Quan,element.receive_Quan,element.remain_Quan)
 	})
 }
 

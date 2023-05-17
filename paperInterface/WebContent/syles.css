@@ -91,6 +91,13 @@
   text-align: center;
 }
 
+.login-box h1 {
+  margin: 0 0 30px;
+  padding: 0;
+  color: #fff;
+  text-align: center;
+}
+
 .login-box .user-box {
   position: relative;
 }
@@ -193,12 +200,12 @@
   width: 100%;
   
 }
-.loginPopup h2{
+.loginPopup h2,h1{
   position: relative;
   text-align: center;
   width: 100%;
 }
-.loginPopup h2,label{
+.loginPopup h2,h1,label{
   color: #eee;
 }
 .formPopup {
