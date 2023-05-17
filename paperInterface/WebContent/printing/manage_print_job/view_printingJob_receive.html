@@ -64,7 +64,7 @@
     <button class = 'btn' type="button" onclick="history.back()">BACK</button>
     <h2>PRINTING JOB DETAILS</h2>
 </div>
-<div id = "ROReportbypid">
+<div>
     <div class="box-sizing">
             <label>Print ID: </label><label id="pjid"></label><br><br>
             <label>Purchase ID: </label><label id="pid"></label><br><br>
@@ -86,7 +86,7 @@
                 <th> Time of Receipt </th>
             </tr>   
         </thead> 
-        <tbody id = "rOrderbypid"> </tbody>  
+        <tbody id = "receivePrintJob"> </tbody>  
   
 </table>
 </div>
@@ -126,20 +126,21 @@ window.onload = (e) =>{
         pjidStr = pjidStr.substring(3);
         var pjid =parseInt(pjidStr);
         PrintingJobDetails(pjid);
-       // viewRORepoByPid(pjid);
+        receivingDetailsOfPrintingJob(pjid);
     }
 }
 
-function getRORepoByPid(pid1){
+function receivingDetailsOfPrintingJob(pjid){
+
     var myHeaders = new Headers();
-myHeaders.append("SOAPAction", "\"\"");
-myHeaders.append("Content-Type", "application/xml");
+    myHeaders.append("SOAPAction", "\"\"");
+    myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <reportbypid xmlns="http://mainpkg">
-            <pid>${pid1}</pid>
-        </reportbypid>
+        <receivePrintingJobDetails xmlns="http://view_printjob_receive">
+            <pjid>${pjid}</pjid>
+        </receivePrintingJobDetails>
     </Body>
 </Envelope>`
 var requestOptions = {
@@ -149,63 +150,49 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("http://localhost:8080/paper/services/ROReportByPidView", requestOptions)
+fetch("http://localhost:8080/paper/services/ReceivePrintingJobDetails", requestOptions)
   .then(response => response.text())
   .then(result => {
 			
             var xml = parseXML(result);
-            var tbody = document.getElementById('rOrderbypid');
-            var numberOfRecords = xml.getElementsByTagName('reportbypidReturn').length;
+            var tbody = document.getElementById('receivePrintJob');
+            var numberOfRecords = xml.getElementsByTagName('receivePrintingJobDetailsReturn').length;
           
             for(i = 0; i < numberOfRecords; i++){
                 
-                      var receiveId = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[0].childNodes[0].nodeValue;
-                      var size = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[1].childNodes[0].nodeValue;
-                      var weight = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[2].childNodes[0].nodeValue;
-                      var vendor = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[3].childNodes[0].nodeValue;
-                      var total_Quan = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[4].childNodes[0].nodeValue;
-                      var receive_Quan = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[5].childNodes[0].nodeValue;
-                      var damage_Quan = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[6].childNodes[0].nodeValue;
-                      var time = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[7].childNodes[0].nodeValue;
-                            
-                      additemROPid(receiveId,receive_Quan,damage_Quan,time);
+                var receiveId = xml.getElementsByTagName('receivePrintingJobDetailsReturn')[i].childNodes[0].childNodes[0].nodeValue;
+                var receive_Quan = xml.getElementsByTagName('receivePrintingJobDetailsReturn')[i].childNodes[1].childNodes[0].nodeValue;
+                var time = xml.getElementsByTagName('receivePrintingJobDetailsReturn')[i].childNodes[2].childNodes[0].nodeValue;
+
+                additemROPid(receiveId,receive_Quan,time);
                       
             }
         })
     .catch(error => console.log('error', error));
 }
-function additemROPid(receiveId,receive_Quan,damage_Quan,time)
+function additemROPid(receiveId,receive_Quan,time)
 {
-	var tbody = document.getElementById('rOrderbypid');
+	var tbody = document.getElementById('receivePrintJob');
 
 	let br = document.createElement("br");
 
 	let trow=document.createElement("tr");
 	let td1=document.createElement('td');
-	let td7=document.createElement('td');
-	let td8=document.createElement('td');
-	let td9=document.createElement('td');
+	let td2=document.createElement('td');
+	let td3=document.createElement('td');
 	
 	td1.innerHTML=receiveId;
-	td7.innerHTML=receive_Quan;
-	td8.innerHTML=damage_Quan;
-	td9.innerHTML=time;
+	td2.innerHTML=receive_Quan;
+	td3.innerHTML=time;
 
 
 	trow.appendChild(td1);
-	trow.appendChild(td7);
-	trow.appendChild(td8);
-	trow.appendChild(td9);
+	trow.appendChild(td2);
+	trow.appendChild(td3);
 
 
 	tbody.appendChild(trow);
 	tbody.appendChild(br);
-}
-
-function viewRORepoByPid(pid){
-    getRORepoByPid(pid);
-    
-    document.getElementById("ROReportbypid").removeAttribute("hidden");
 }
 
 function PrintingJobDetails(pjid){

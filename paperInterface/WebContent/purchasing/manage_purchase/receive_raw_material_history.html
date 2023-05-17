@@ -131,7 +131,7 @@ window.onload = (e) =>{
 
 function getRORepoByPid(pid1){
     var myHeaders = new Headers();
-myHeaders.append("SOAPAction", "\"\"");
+    myHeaders.append("SOAPAction", "\"\"");
 myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
@@ -159,13 +159,9 @@ fetch("http://localhost:8080/paper/services/ROReportByPidView", requestOptions)
             for(i = 0; i < numberOfRecords; i++){
                 
                       var receiveId = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[0].childNodes[0].nodeValue;
-                      var size = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[1].childNodes[0].nodeValue;
-                      var weight = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[2].childNodes[0].nodeValue;
-                      var vendor = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[3].childNodes[0].nodeValue;
-                      var total_Quan = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[4].childNodes[0].nodeValue;
-                      var receive_Quan = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[5].childNodes[0].nodeValue;
-                      var damage_Quan = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[6].childNodes[0].nodeValue;
-                      var time = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[7].childNodes[0].nodeValue;
+                      var receive_Quan = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[1].childNodes[0].nodeValue;
+                      var damage_Quan = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[2].childNodes[0].nodeValue;
+                      var time = xml.getElementsByTagName('reportbypidReturn')[i].childNodes[3].childNodes[0].nodeValue;
                             
                       additemROPid(receiveId,receive_Quan,damage_Quan,time);
                       
@@ -232,32 +228,27 @@ fetch("http://localhost:8080/paper/services/receiveSummary", requestOptions)
   .then(result => {
 			
             var xml = parseXML(result);
-            var tbody = document.getElementById('rOrderbypid');
-            var numberOfRecords = xml.getElementsByTagName('getAllRecievedSummaryReturn').length;
-          
-            for(i = 0; i < numberOfRecords; i++){
                 
-                      var purchaseID = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[0].childNodes[0].nodeValue;
-                      var raw = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[1].childNodes[0].nodeValue;
-                      var size = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[2].childNodes[0].nodeValue;
-                      var weight = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[3].childNodes[0].nodeValue;
-                      var vendor = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[4].childNodes[0].nodeValue;
-                      var total_Quan = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[5].childNodes[0].nodeValue;
-                      var receive_Quan = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[6].childNodes[0].nodeValue;
-                      var damage_Quan = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[7].childNodes[0].nodeValue;
-                      var time = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[8].childNodes[0].nodeValue;
-                      
-            }
-            var rem_quan = parseInt(total_Quan) - parseInt(receive_Quan) - parseInt(damage_Quan);
-            document.getElementById('pid').innerHTML=pid;
-            document.getElementById('size').innerHTML=size;
-            document.getElementById('weight').innerHTML=weight;
-            document.getElementById('vendor').innerHTML=vendor;
-            document.getElementById('quan').innerHTML=total_Quan;
-            document.getElementById('intact').innerHTML=receive_Quan;
-            document.getElementById('dmge').innerHTML=damage_Quan;
-            document.getElementById('remain').innerHTML=rem_quan;
-            document.getElementById('ordtime').innerHTML=time;
+                      var purchaseID = xml.getElementsByTagName('getAllRecievedSummaryReturn')[0].childNodes[0].childNodes[0].nodeValue;
+                      var raw = xml.getElementsByTagName('getAllRecievedSummaryReturn')[0].childNodes[1].childNodes[0].nodeValue;
+                      var size = xml.getElementsByTagName('getAllRecievedSummaryReturn')[0].childNodes[2].childNodes[0].nodeValue;
+                      var weight = xml.getElementsByTagName('getAllRecievedSummaryReturn')[0].childNodes[3].childNodes[0].nodeValue;
+                      var vendor = xml.getElementsByTagName('getAllRecievedSummaryReturn')[0].childNodes[4].childNodes[0].nodeValue;
+                      var total_Quan = xml.getElementsByTagName('getAllRecievedSummaryReturn')[0].childNodes[5].childNodes[0].nodeValue;
+                      var receive_Quan = xml.getElementsByTagName('getAllRecievedSummaryReturn')[0].childNodes[6].childNodes[0].nodeValue;
+                      var damage_Quan = xml.getElementsByTagName('getAllRecievedSummaryReturn')[0].childNodes[7].childNodes[0].nodeValue;
+                      var time = xml.getElementsByTagName('getAllRecievedSummaryReturn')[0].childNodes[8].childNodes[0].nodeValue;
+                      var rem_quan = parseInt(total_Quan) - parseInt(receive_Quan) - parseInt(damage_Quan);
+            
+                        document.getElementById('pid').innerHTML=pid;
+                        document.getElementById('size').innerHTML=size;
+                        document.getElementById('weight').innerHTML=weight;
+                        document.getElementById('vendor').innerHTML=vendor;
+                        document.getElementById('quan').innerHTML=total_Quan;
+                        document.getElementById('intact').innerHTML=receive_Quan;
+                        document.getElementById('dmge').innerHTML=damage_Quan;
+                        document.getElementById('remain').innerHTML=rem_quan;
+                        document.getElementById('ordtime').innerHTML=time;
         })
   .catch(error => console.log('error', error));
 }
