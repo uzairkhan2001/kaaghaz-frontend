@@ -4,7 +4,7 @@
 <meta charset="ISO-8859-1">
   <title>Receive Purchase Order</title>
   
-  <link rel="stylesheet" href="syles.css">
+  <link rel="stylesheet" href="../../syles.css">
   <style>
     body{
       margin: 0%;
@@ -57,9 +57,9 @@
 </head>
 <body>
 <div class="topnav">
-    <a href="http://localhost:8080/paperInterface/homepage.html">Home</a>
-    <a href="http://localhost:8080/paperInterface/Inventory.html">Inventory</a>
-    <a class="active" href="http://localhost:8080/paperInterface/purchases.html">Purchases</a>
+    <a href="http://localhost:8080/paperInterface/home/homepage.html">Home</a>
+    <a href="http://localhost:8080/paperInterface/home/Inventory.html">Inventory</a>
+    <a class="active" href="http://localhost:8080/paperInterface/purchasing/purchases.html">Purchases</a>
     <a href="#about">About</a>
 </div>
 <div class="bdy">
@@ -67,7 +67,7 @@
   <div class="RepoBtns">
     <button class = 'btn' type="button" onclick="history.back()">BACK</button>
 </div>
-  <h2>Existing Purchase Orders</h2>
+  <h1 class="head1">Existing Purchase Orders</h1>
   <br>
   <br>
   <select id="Category" onchange="changeCategory()">
@@ -391,7 +391,7 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,receive_Quan,damag
 //redirect to the page through "view history" buttton on the specific history of Purchase ID
 function redirect(pid){
   
-    window.location.href = 'http://localhost:8080/paperInterface/receive_raw_material_history.html?pid='+pid;
+    window.location.href = 'http://localhost:8080/paperInterface/purchasing/manage_purchase/receive_raw_material_history.html?pid='+pid;
 }
 
 

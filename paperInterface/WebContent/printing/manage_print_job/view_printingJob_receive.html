@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html>
 <head>
 
     <meta charset="ISO-8859-1">
   
-    <link rel="stylesheet" href="syles.css">
+    <link rel="stylesheet" href="../../syles.css">
     <style> 
         body{
         margin: 0%;
@@ -53,35 +54,35 @@
 
 <body>
     <div class="topnav">
-        <a href="http://localhost:8080/paperInterface/homepage.html">Home</a>
-        <a href="http://localhost:8080/paperInterface/recieveorder.html">Inventory</a>
-        <a class="active" href="http://localhost:8080/paperInterface/purchases.html">Purchases</a>
+        <a href="http://localhost:8080/paperInterface/home/homepage.html">Home</a>
+        <a href="http://localhost:8080/paperInterface/purchasing/manage_purchase/recieveorder.html">Inventory</a>
+        <a class="active" href="http://localhost:8080/paperInterface/purchasing/purchases.html">Purchases</a>
         <a href="#about">About</a>
         </div>        
 <div class="bdy">
 <div class="RepoBtns">
     <button class = 'btn' type="button" onclick="history.back()">BACK</button>
-    <h2>PURCHASE ORDER DETAILS</h2>
+    <h2>PRINTING JOB DETAILS</h2>
 </div>
-<div id = "ROReportbypid" hidden="hidden">
+<div id = "ROReportbypid">
     <div class="box-sizing">
+            <label>Print ID: </label><label id="pjid"></label><br><br>
             <label>Purchase ID: </label><label id="pid"></label><br><br>
             <label>Size: </label><label id="size"></label><br><br>
             <label>Weight: </label><label id="weight"></label><br><br>
-            <label>Vendor: </label><label id="vendor"></label><br><br>
+            <label>PO Vendor: </label><label id="povendor"></label><br><br>
+            <label>Printing Vendor: </label><label id="pjvendor"></label><br><br>
             <label>Total Quantity: </label><label id="quan"></label><br><br>
-            <label>Received Intact: </label><label id="intact"></label><br><br>
-            <label>Received Damage: </label><label id="dmge"></label><br><br>
+            <label>Received Quantity: </label><label id="rec_quan"></label><br><br>
             <label>Remaining Quantity: </label><label id="remain"></label><br><br>
-            <label>Order Time: </label><label id="ordtime"></label>
+            <label>Sent Time: </label><label id="ordtime"></label>
             <h1 class="head1">Received Inventory</h1>
     </div>
     <table class="tableData">  
         <thead>  
             <tr>  
                 <th> Received ID </th> 
-                <th> Received Intact </th>  
-                <th> Received Damaged </th>
+                <th> Received Quantity </th>  
                 <th> Time of Receipt </th>
             </tr>   
         </thead> 
@@ -116,16 +117,16 @@ window.onload = (e) =>{
         get: (searchParams, prop) => searchParams.get(prop),
     });
 
-    pidStr = params.pid;
+    pjidStr = params.pjid;
 
-    if(pidStr == "*"){
+    if(pjidStr == "*"){
         viewRORepo();
     }
     else{
-        pidStr = pidStr.substring(3);
-        var pid =parseInt(pidStr);
-        receiveSummary(pid);
-        viewRORepoByPid(pid);
+        pjidStr = pjidStr.substring(3);
+        var pjid =parseInt(pjidStr);
+        PrintingJobDetails(pjid);
+       // viewRORepoByPid(pjid);
     }
 }
 
@@ -207,16 +208,16 @@ function viewRORepoByPid(pid){
     document.getElementById("ROReportbypid").removeAttribute("hidden");
 }
 
-function receiveSummary(pid){
+function PrintingJobDetails(pjid){
     var myHeaders = new Headers();
     myHeaders.append("SOAPAction", "\"\"");
     myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <getAllRecievedSummary xmlns="http://mainpkg">
-            <pid>${pid}</pid>
-        </getAllRecievedSummary>
+        <getPrintingJobSummary xmlns="http://mainpkg">
+            <pjid>${pjid}</pjid>
+        </getPrintingJobSummary>
     </Body>
 </Envelope>`
 
@@ -227,35 +228,32 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("http://localhost:8080/paper/services/receiveSummary", requestOptions)
+fetch("http://localhost:8080/paper/services/GetPrintingJobSummary", requestOptions)
   .then(response => response.text())
   .then(result => {
 			
             var xml = parseXML(result);
-            var tbody = document.getElementById('rOrderbypid');
-            var numberOfRecords = xml.getElementsByTagName('getAllRecievedSummaryReturn').length;
-          
-            for(i = 0; i < numberOfRecords; i++){
-                
-                      var purchaseID = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[0].childNodes[0].nodeValue;
-                      var raw = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[1].childNodes[0].nodeValue;
-                      var size = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[2].childNodes[0].nodeValue;
-                      var weight = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[3].childNodes[0].nodeValue;
-                      var vendor = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[4].childNodes[0].nodeValue;
-                      var total_Quan = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[5].childNodes[0].nodeValue;
-                      var receive_Quan = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[6].childNodes[0].nodeValue;
-                      var damage_Quan = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[7].childNodes[0].nodeValue;
-                      var time = xml.getElementsByTagName('getAllRecievedSummaryReturn')[i].childNodes[8].childNodes[0].nodeValue;
-                      
-            }
-            var rem_quan = parseInt(total_Quan) - parseInt(receive_Quan) - parseInt(damage_Quan);
-            document.getElementById('pid').innerHTML=pid;
+
+            var printID = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[0].childNodes[0].nodeValue;
+            var purchaseID = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[1].childNodes[0].nodeValue;
+            var raw = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[2].childNodes[0].nodeValue;
+            var size = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[3].childNodes[0].nodeValue;
+            var weight = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[4].childNodes[0].nodeValue;
+            var povendor = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[5].childNodes[0].nodeValue;
+            var pjvendor = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[6].childNodes[0].nodeValue;
+            var total_Quan = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[7].childNodes[0].nodeValue;
+            var receive_Quan = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[8].childNodes[0].nodeValue;
+            var time = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[9].childNodes[0].nodeValue;
+            var rem_quan = parseInt(total_Quan) - parseInt(receive_Quan);
+
+            document.getElementById('pjid').innerHTML=printID;
+            document.getElementById('pid').innerHTML=purchaseID;
             document.getElementById('size').innerHTML=size;
             document.getElementById('weight').innerHTML=weight;
-            document.getElementById('vendor').innerHTML=vendor;
+            document.getElementById('povendor').innerHTML=povendor;
+            document.getElementById('pjvendor').innerHTML=pjvendor;
             document.getElementById('quan').innerHTML=total_Quan;
-            document.getElementById('intact').innerHTML=receive_Quan;
-            document.getElementById('dmge').innerHTML=damage_Quan;
+            document.getElementById('rec_quan').innerHTML=receive_Quan;
             document.getElementById('remain').innerHTML=rem_quan;
             document.getElementById('ordtime').innerHTML=time;
         })
