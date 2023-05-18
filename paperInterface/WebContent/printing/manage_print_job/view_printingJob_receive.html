@@ -202,7 +202,7 @@ function PrintingJobDetails(pjid){
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <getPrintingJobSummary xmlns="http://mainpkg">
+        <getPrintingJobSummary xmlns="http://view_printjob_receive">
             <pjid>${pjid}</pjid>
         </getPrintingJobSummary>
     </Body>

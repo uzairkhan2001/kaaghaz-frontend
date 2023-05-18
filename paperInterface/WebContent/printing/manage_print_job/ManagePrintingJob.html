@@ -147,7 +147,7 @@ myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <managePrintingJob xmlns="http://mainpkg">
+        <managePrintingJob xmlns="http://manage_printing_job">
             <category>${category}</category>
         </managePrintingJob>
     </Body>
@@ -370,55 +370,15 @@ function openForm(printId) {
     }
   }
 
-//Load Printing Vendor
-function loadVendor(){
-  var myHeaders = new Headers();
-myHeaders.append("SOAPAction", "\"\"");
-myHeaders.append("Content-Type", "application/xml");
-
-var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-    <Body>
-        <getAllPrintVendor xmlns="http://mainpkg"/>
-    </Body>
-</Envelope>`
-
-var requestOptions = {
-  method: 'POST',
-  headers: myHeaders,
-  body: raw,
-  redirect: 'follow'
-};
-
-fetch("http://localhost:8080/paper/services/GetAllPrintVendors", requestOptions)
-  .then(response => response.text())
-  .then(
-    (result => {
-			  var xml = parseXML(result);
-			  var select = document.getElementById('vendors');
-			  var numberOfSizes = xml.getElementsByTagName('getAllPrintVendorReturn').length;
-			  for(i = 0; i < numberOfSizes; i++)
-			  {
-				var id = xml.getElementsByTagName('getAllPrintVendorReturn')[i].childNodes[0].childNodes[0].nodeValue;
-				var name = xml.getElementsByTagName('getAllPrintVendorReturn')[i].childNodes[1].childNodes[0].nodeValue;
-				
-				var opt = document.createElement('option');
-			    opt.value = id;
-			    opt.innerHTML = name;
-			    select.appendChild(opt);
-			  }
-		  })
-  )
-  .catch(error => console.log('error', error));
-}
 function closeForm() {
   document.getElementById("popupForm").style.display = "none";
   document.getElementById("popupForm").removeChild(document.getElementById("rcvfrm"));
 }
 
 //receive from printing job
-function insertPrintingReceive(purchaseId){
+function insertPrintingReceive(printId){
 
-  var pid = purchaseId.substring(3)
+  var pjid = printId.substring(3)
   var qty =document.getElementById("quantity").value
   var receive = parseInt(document.getElementById("rec" + pid).innerHTML);
   var remaining = parseInt(document.getElementById("rem" + pid).innerHTML);
@@ -429,10 +389,10 @@ function insertPrintingReceive(purchaseId){
 
   var raw =`<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <insertRecieveOrder xmlns="http://mainpkg">
-            <printID>${pid}</printID>
+        <insertReceiveFromPrinting xmlns="http://manage_printing_job">
+            <printID>${pjid}</printID>
             <receive>${qty}</receive>
-        </insertRecieveOrder>
+        </insertReceiveFromPrinting>
     </Body>
 </Envelope>`
 
@@ -443,11 +403,11 @@ function insertPrintingReceive(purchaseId){
     redirect: 'follow'
   };
 
-  fetch("http://localhost:8080/paper/services/receiveFromPrinting", requestOptions)
+  fetch("http://localhost:8080/paper/services/InsertReceiveFromPrinting", requestOptions)
     .then(response => response.text())
     .then(result => {
-      document.getElementById("rec" + pid).innerHTML = parseInt(qty) + parseInt(receive);
-      document.getElementById("rem" + pid).innerHTML = remaining - qty;
+      document.getElementById("rec" + pjid).innerHTML = parseInt(qty) + parseInt(receive);
+      document.getElementById("rem" + pjid).innerHTML = remaining - qty;
       console.log(result);
       closeForm();
     })

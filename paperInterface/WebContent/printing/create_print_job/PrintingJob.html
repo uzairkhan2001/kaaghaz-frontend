@@ -143,9 +143,9 @@ myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <createPrintingJob1 xmlns="http://mainpkg">
+        <createPrintingJob xmlns="http://create_printing_job">
             <category>${category}</category>
-        </createPrintingJob1>
+        </createPrintingJob>
     </Body>
 </Envelope>`
 
@@ -156,22 +156,22 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("http://localhost:8080/paper/services/CreatePrintingJob1", requestOptions)
+fetch("http://localhost:8080/paper/services/CreatePrintingJob", requestOptions)
   .then(response => response.text())
   .then(result =>  {
 			
 		  var xml = parseXML(result);
 		  var tbody = document.getElementById('printingJob');
-		  var numberOfRecords = xml.getElementsByTagName('createPrintingJob1Return').length;
+		  var numberOfRecords = xml.getElementsByTagName('createPrintingJobReturn').length;
 		
 		  for(i = 0; i < numberOfRecords; i++){
 			  
-			  	var purchaseId = xml.getElementsByTagName('createPrintingJob1Return')[i].childNodes[0].childNodes[0].nodeValue;
-					var raw = xml.getElementsByTagName('createPrintingJob1Return')[i].childNodes[1].childNodes[0].nodeValue;
-          var size = xml.getElementsByTagName('createPrintingJob1Return')[i].childNodes[2].childNodes[0].nodeValue;
-					var weight = xml.getElementsByTagName('createPrintingJob1Return')[i].childNodes[3].childNodes[0].nodeValue;
-					var vendor = xml.getElementsByTagName('createPrintingJob1Return')[i].childNodes[4].childNodes[0].nodeValue;
-					var total_Quan = xml.getElementsByTagName('createPrintingJob1Return')[i].childNodes[5].childNodes[0].nodeValue;
+			  	var purchaseId = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[0].childNodes[0].nodeValue;
+					var raw = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[1].childNodes[0].nodeValue;
+          var size = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[2].childNodes[0].nodeValue;
+					var weight = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
+					var vendor = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[4].childNodes[0].nodeValue;
+					var total_Quan = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[5].childNodes[0].nodeValue;
           if(total_Quan>0){
 					additem(purchaseId,raw,size,weight,vendor,total_Quan,purchaseId);
           }
@@ -338,7 +338,7 @@ myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <getAllPrintVendor xmlns="http://mainpkg"/>
+        <getAllPrintVendor xmlns="http://create_printing_job"/>
     </Body>
 </Envelope>`
 
@@ -370,6 +370,7 @@ fetch("http://localhost:8080/paper/services/GetAllPrintVendors", requestOptions)
   )
   .catch(error => console.log('error', error));
 }
+
 function closeForm() {
   document.getElementById("popupForm").style.display = "none";
   document.getElementById("popupForm").removeChild(document.getElementById("rcvfrm"));
@@ -395,7 +396,7 @@ myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <sendPrintingJob xmlns="http://mainpkg">
+        <sendPrintingJob xmlns="http://create_printing_job">
             <purchaseID>${pid}</purchaseID>
             <vendor>${ven}</vendor>
             <qty>${qty}</qty>
@@ -418,47 +419,6 @@ fetch("http://localhost:8080/paper/services/SendForPrintingJob", requestOptions)
       closeForm();
     })
   .catch(error => console.log('error', error));
-// }
-insertPrintingReceive(purchaseId);
 }
-
-function insertPrintingReceive(purchaseId){
-  var myHeaders = new Headers();
-  myHeaders.append("SOAPAction", "\"\"");
-  myHeaders.append("Content-Type", "application/xml");
-
-  var pid = purchaseId.substring(3)
-  var qty =document.getElementById("print").value
-
-  var raw =`<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-    <Body>
-        <insertRecieveOrder xmlns="http://mainpkg">
-            <printID>${pid}</printID>
-            <receive>${qty}</receive>
-        </insertRecieveOrder>
-    </Body>
-</Envelope>`
-
-  var requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: raw,
-    redirect: 'follow'
-  };
-
-  fetch("http://localhost:8080/paper/services/receiveFromPrinting", requestOptions)
-    .then(response => response.text())
-    .then(result => console.log(result))
-    .catch(error => console.log('error', error));
-
-}
-
-function addallitem(id,purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan){
-	tbody.innerHTML="";
-	order.forEach(element=>{
-		additem(element.purchaseId,element.size,element.weight,element.vendor,element.total_Quan,element.receive_Quan,element.damage_Quan,element.remain_Quan)
-	})
-}
-
 </script>
 </html>
