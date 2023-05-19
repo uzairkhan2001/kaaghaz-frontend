@@ -166,7 +166,7 @@ function validateValues() {
 	vendor = document.getElementById('vendors').value
 	quan = document.getElementById('Quantity').value
 	error = "All Fields must be Valid Input!"
-	  if (size == "0" || weight == "0" || vendor == "0" || quan < 1 ) {
+	  if (size <= 0 || weight <= 0 || vendor <= 0 || quan < 1 ) {
 		alert(error);
 	    window.location.reload();
 	  }
@@ -192,7 +192,7 @@ myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <getAllSizeID xmlns="http://mainpkg">
+        <getAllSizeID xmlns="http://create_purchase_order">
             <rawid>${category}</rawid>
         </getAllSizeID>
     </Body>
@@ -237,7 +237,7 @@ function loadWeights()
 
 	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     				<Body>
-        				<getAllweight xmlns="http://mainpkg">
+        				<getAllweight xmlns="http://create_purchase_order">
             				<SizeID>${size}</SizeID>
         				</getAllweight>
     				</Body>
@@ -283,7 +283,7 @@ function loadVendors()
 
 	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
 	    			<Body>
-    	    			<getAllVendor xmlns="http://mainpkg">
+    	    			<getAllVendor xmlns="http://create_purchase_order">
         	   				<SizeID>${size}</SizeID>
         	    			<WeightID>${weight}</WeightID>
         				</getAllVendor>
@@ -363,41 +363,7 @@ function createPurchaseOrder(){
 
 	  })
 	  .catch(error => console.log('error', error));
-	insertRecievedOrder();
 }
-
-function insertRecievedOrder(){
-	
-	size = document.getElementById('sizes').value
-	weight = document.getElementById('weights').value
-	vendor = document.getElementById('vendors').value
-	
-	var myHeaders = new Headers();
-	myHeaders.append("SOAPAction", "\"\"");
-	myHeaders.append("Content-Type", "text/plain");
-
-	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-    <Body>
-        <insertRecieveOrder xmlns="http://mainpkg">
-        <SizeID>${size}</SizeID>
-		<WeightID>${weight}</WeightID>
-		<VendorID>${vendor}</VendorID>
-        </insertRecieveOrder>
-    </Body>
-</Envelope>`
-		
-	var requestOptions = {
-	  method: 'POST',
-	  headers: myHeaders,
-	  body: raw,
-	  redirect: 'follow'
-	};
-
-	fetch("http://localhost:8080/paper/services/Recieveorder", requestOptions)
-	  .then(response => response.text())
-	  .then(result => console.log(result))
-	  .catch(error => console.log('error', error));
-}
-
+S
 </script>
 </html>

@@ -163,7 +163,7 @@ function getCompletedRecRecords(){
 
   var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <getAllCompletedRecRecords xmlns="http://mainpkg"/>
+        <getAllCompletedRecRecords xmlns="http://manage_purchase_order"/>
     </Body>
 </Envelope>`
 
@@ -208,7 +208,7 @@ myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <getAllPendingRecRecords xmlns="http://mainpkg"/>
+        <getAllPendingRecRecords xmlns="http://manage_purchase_order"/>
     </Body>
 </Envelope>`
 
@@ -255,7 +255,7 @@ function getAllRecievedRecord(){
 
 	var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <getAllRecievedRecords xmlns="http://mainpkg"/>
+        <getAllRecievedRecords xmlns="http://manage_purchase_order"/>
     </Body>
 </Envelope>`
 	
@@ -506,7 +506,7 @@ function validateValues(pid) {
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <getQuantity xmlns="http://mainpkg">
+        <getQuantity xmlns="http://manage_purchase_order">
             <ID>${pid}</ID>
         </getQuantity>
     </Body>

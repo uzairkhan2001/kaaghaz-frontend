@@ -380,8 +380,8 @@ function insertPrintingReceive(printId){
 
   var pjid = printId.substring(3)
   var qty =document.getElementById("quantity").value
-  var receive = parseInt(document.getElementById("rec" + pid).innerHTML);
-  var remaining = parseInt(document.getElementById("rem" + pid).innerHTML);
+  var receive = parseInt(document.getElementById("rec" + pjid).innerHTML);
+  var remaining = parseInt(document.getElementById("rem" + pjid).innerHTML);
   
   var myHeaders = new Headers();
   myHeaders.append("SOAPAction", "\"\"");
