@@ -60,6 +60,9 @@
     <a href="http://localhost:8080/paperInterface/home/homepage.html">Home</a>
     <a href="http://localhost:8080/paperInterface/home/Inventory.html">Inventory</a>
     <a class="active" href="http://localhost:8080/paperInterface/purchasing/purchases.html">Purchases</a>
+    <a href="http://localhost:8080/paperInterface/printing/Printing.html">Printing Job</a>
+    <a href="http://localhost:8080/paperInterface/compiling/Compiling.html">Compiling Job</a>
+    <a href="http://localhost:8080/paperInterface/binding/Binding.html">Binding Job</a>
     <a href="#about">About</a>
 </div>
 <div class="bdy">
@@ -580,6 +583,7 @@ fetch("http://localhost:8080/paper/services/Recieveorder", requestOptions)
   .catch(error => console.log('error', error));
   }
 }
+
 
 function addallitem(id,purchaseId,size,weight,vendor,total_Quan,receive_Quan,damage_Quan,remain_Quan){
 	tbody.innerHTML="";

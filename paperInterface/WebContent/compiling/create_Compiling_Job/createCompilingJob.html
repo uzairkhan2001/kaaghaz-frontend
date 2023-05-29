@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-  <title>Send Printing Job</title>
+  <title>Send Compiling Job</title>
   <link rel="shortcut icon" href="#">
   <link rel="stylesheet" href="../../syles.css">
   <style>
@@ -60,8 +60,8 @@
     <a href="http://localhost:8080/paperInterface/home/homepage.html">Home</a>
     <a href="http://localhost:8080/paperInterface/home/Inventory.html">Inventory</a>
     <a href="http://localhost:8080/paperInterface/purchasing/purchases.html">Purchases</a>
-    <a class="active" href="http://localhost:8080/paperInterface/printing/Printing.html">Printing Job</a>
-    <a href="http://localhost:8080/paperInterface/compiling/Compiling.html">Compiling Job</a>
+    <a href="http://localhost:8080/paperInterface/printing/Printing.html">Printing Job</a>
+    <a class="active" href="http://localhost:8080/paperInterface/compiling/Compiling.html">Compiling Job</a>
     <a href="http://localhost:8080/paperInterface/binding/Binding.html">Binding Job</a>
     <a href="#about">About</a>
 </div>
@@ -70,7 +70,7 @@
   <div class="RepoBtns">
     <button class = 'btn' type="button" onclick="history.back()">BACK</button>
 </div>
-<h1 class="head1">Create Printing Job</h1>
+<h1 class="head1">Create Compiling Job</h1>
   <br>
   <br>
   <select id="Category" onchange="getCategory()">
@@ -81,11 +81,11 @@
 </select>
 </div>      
 <div class="tble">
-<h1 class="head1">Printing Job</h1>
+<h1 class="head1">Compiling Job</h1>
 <table class="tableData" id="myTable">  
   <thead>  
     <tr>  
-      <th> Purchase ID </th> 
+      <th> Print ID </th> 
       <th> Raw Material </th> 
       <th> Size </th>  
       <th> Weight </th>  
@@ -223,7 +223,7 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,purchaseId){
 	let td6=document.createElement('td');
   let td10=document.createElement('td');
   
-	td1.innerHTML="PID"+purchaseId;
+	td1.innerHTML="PRI"+purchaseId;
 	td2.innerHTML=raw;
   td3.innerHTML=size;
 	td4.innerHTML=weight;
@@ -279,10 +279,10 @@ f.setAttribute("class","formContainer");
 f.setAttribute("id", "rcvfrm");
 
 const h = document.createElement('h2');
-h.textContent = "PRINTING JOB";
+h.textContent = "COMPILING JOB";
 
 var label1 = document.createElement('label');
-label1.innerHTML = "PURCHASE ID: "+purchaseId;
+label1.innerHTML = "PRINT ID: "+purchaseId;
 
 //create input element 1
 var quantity = document.createElement('input');

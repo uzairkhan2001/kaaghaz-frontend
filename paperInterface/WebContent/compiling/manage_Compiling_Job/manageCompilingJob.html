@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-  <title>Send Printing Job</title>
+  <title>Manage Compiling Job</title>
   <link rel="shortcut icon" href="#">
   <link rel="stylesheet" href="../../syles.css">
   <style>
@@ -60,8 +60,8 @@
     <a href="http://localhost:8080/paperInterface/home/homepage.html">Home</a>
     <a href="http://localhost:8080/paperInterface/home/Inventory.html">Inventory</a>
     <a href="http://localhost:8080/paperInterface/purchasing/purchases.html">Purchases</a>
-    <a class="active" href="http://localhost:8080/paperInterface/printing/Printing.html">Printing Job</a>
-    <a href="http://localhost:8080/paperInterface/compiling/Compiling.html">Compiling Job</a>
+    <a href="http://localhost:8080/paperInterface/printing/Printing.html">Printing Job</a>
+    <a class="active" href="http://localhost:8080/paperInterface/compiling/Compiling.html">Compiling Job</a>
     <a href="http://localhost:8080/paperInterface/binding/Binding.html">Binding Job</a>
     <a href="#about">About</a>
 </div>
@@ -70,7 +70,7 @@
   <div class="RepoBtns">
     <button class = 'btn' type="button" onclick="history.back()">BACK</button>
 </div>
-<h1 class="head1">Manage Printing Jobs</h1>
+<h1 class="head1">Manage Compiling Jobs</h1>
   <br>
   <br>
   <select id="Category" onchange="getPrintingJobs()">
@@ -81,12 +81,12 @@
 </select>
 </div>      
 <div class="tble">
-<h1 class="head1">Printing Jobs</h1>
+<h1 class="head1">Compiling Jobs</h1>
 <table class="tableData" id="myTable">  
   <thead>  
     <tr>  
       <th> ID </th> 
-      <th> Purchase ID </th> 
+      <th> Print ID </th> 
       <th> Raw Material </th> 
       <th> Size </th>  
       <th> Weight </th>  
@@ -212,8 +212,8 @@ function additem(printId,purchaseId,raw,size,weight,vendor,printvendor,total_Qua
   let td10=document.createElement('td');
   let td11=document.createElement('td');
   
-	td1.innerHTML="PRID"+printId;
-  td2.innerHTML="PID"+purchaseId;
+	td1.innerHTML="COM"+printId;
+  td2.innerHTML="PRI"+purchaseId;
 	td3.innerHTML=raw;
   td4.innerHTML=size;
 	td5.innerHTML=weight;
@@ -287,7 +287,7 @@ else
 //
 function redirect(pjid){
   
-  window.location.href = 'http://localhost:8080/paperInterface/printing/manage_print_job/view_printingJob_receive.html?pjid='+pjid;
+  window.location.href = 'http://localhost:8080/paperInterface/compiling/manage_Compiling_Job/view_compilingjob_receive.html?pjid='+pjid;
 }
 //Send to print pop up form
 function createForm(printId){
