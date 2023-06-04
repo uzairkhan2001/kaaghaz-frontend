@@ -141,11 +141,12 @@ function receivingDetailsOfPrintingJob(pjid){
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <receivePrintingJobDetails xmlns="http://view_printjob_receive">
+        <receiveCompilingJobDetails xmlns="http://view_compilejob_receive">
             <pjid>${pjid}</pjid>
-        </receivePrintingJobDetails>
+        </receiveCompilingJobDetails>
     </Body>
 </Envelope>`
+
 var requestOptions = {
   method: 'POST',
   headers: myHeaders,
@@ -153,19 +154,19 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("http://localhost:8080/paper/services/ReceivePrintingJobDetails", requestOptions)
+fetch("http://localhost:8080/paper/services/ReceiveCompilingJobDetails", requestOptions)
   .then(response => response.text())
   .then(result => {
 			
             var xml = parseXML(result);
-            var tbody = document.getElementById('receivePrintJob');
-            var numberOfRecords = xml.getElementsByTagName('receivePrintingJobDetailsReturn').length;
+            var tbody = document.getElementById('receiveCompileJob');
+            var numberOfRecords = xml.getElementsByTagName('receiveCompilingJobDetailsReturn').length;
           
             for(i = 0; i < numberOfRecords; i++){
                 
-                var receiveId = xml.getElementsByTagName('receivePrintingJobDetailsReturn')[i].childNodes[0].childNodes[0].nodeValue;
-                var receive_Quan = xml.getElementsByTagName('receivePrintingJobDetailsReturn')[i].childNodes[1].childNodes[0].nodeValue;
-                var time = xml.getElementsByTagName('receivePrintingJobDetailsReturn')[i].childNodes[2].childNodes[0].nodeValue;
+                var receiveId = xml.getElementsByTagName('receiveCompilingJobDetailsReturn')[i].childNodes[0].childNodes[0].nodeValue;
+                var receive_Quan = xml.getElementsByTagName('receiveCompilingJobDetailsReturn')[i].childNodes[1].childNodes[0].nodeValue;
+                var time = xml.getElementsByTagName('receiveCompilingJobDetailsReturn')[i].childNodes[2].childNodes[0].nodeValue;
 
                 additemROPid(receiveId,receive_Quan,time);
                       
@@ -175,7 +176,7 @@ fetch("http://localhost:8080/paper/services/ReceivePrintingJobDetails", requestO
 }
 function additemROPid(receiveId,receive_Quan,time)
 {
-	var tbody = document.getElementById('receivePrintJob');
+	var tbody = document.getElementById('receiveCompileJob');
 
 	let br = document.createElement("br");
 
@@ -198,6 +199,9 @@ function additemROPid(receiveId,receive_Quan,time)
 	tbody.appendChild(br);
 }
 
+
+
+
 function PrintingJobDetails(pjid){
     var myHeaders = new Headers();
     myHeaders.append("SOAPAction", "\"\"");
@@ -205,9 +209,9 @@ function PrintingJobDetails(pjid){
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <getPrintingJobSummary xmlns="http://view_printjob_receive">
+        <getCompilingJobSummary xmlns="http://view_compilejob_receive">
             <pjid>${pjid}</pjid>
-        </getPrintingJobSummary>
+        </getCompilingJobSummary>
     </Body>
 </Envelope>`
 
@@ -218,30 +222,32 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("http://localhost:8080/paper/services/GetPrintingJobSummary", requestOptions)
+fetch("http://localhost:8080/paper/services/GetCompilingJobSummary", requestOptions)
   .then(response => response.text())
   .then(result => {
 			
             var xml = parseXML(result);
 
-            var printID = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[0].childNodes[0].nodeValue;
-            var purchaseID = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[1].childNodes[0].nodeValue;
-            var raw = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[2].childNodes[0].nodeValue;
-            var size = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[3].childNodes[0].nodeValue;
-            var weight = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[4].childNodes[0].nodeValue;
-            var povendor = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[5].childNodes[0].nodeValue;
-            var pjvendor = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[6].childNodes[0].nodeValue;
-            var total_Quan = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[7].childNodes[0].nodeValue;
-            var receive_Quan = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[8].childNodes[0].nodeValue;
-            var time = xml.getElementsByTagName('getPrintingJobSummaryReturn')[0].childNodes[9].childNodes[0].nodeValue;
+            var compileId = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[0].childNodes[0].nodeValue;
+            var printID = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[1].childNodes[0].nodeValue;
+            var raw = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[2].childNodes[0].nodeValue;
+            var size = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[3].childNodes[0].nodeValue;
+            var weight = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[4].childNodes[0].nodeValue;
+            var povendor = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[5].childNodes[0].nodeValue;
+            var pjvendor = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[6].childNodes[0].nodeValue;
+            var cjvendor = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[7].childNodes[0].nodeValue;
+            var total_Quan = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[8].childNodes[0].nodeValue;
+            var receive_Quan = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[9].childNodes[0].nodeValue;
+            var time = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[10].childNodes[0].nodeValue;
             var rem_quan = parseInt(total_Quan) - parseInt(receive_Quan);
 
-            document.getElementById('pjid').innerHTML=printID;
-            document.getElementById('pid').innerHTML=purchaseID;
+            document.getElementById('cid').innerHTML=compileId;
+            document.getElementById('pid').innerHTML=printID;
             document.getElementById('size').innerHTML=size;
             document.getElementById('weight').innerHTML=weight;
             document.getElementById('povendor').innerHTML=povendor;
             document.getElementById('pjvendor').innerHTML=pjvendor;
+            document.getElementById('cjvendor').innerHTML=cjvendor;
             document.getElementById('quan').innerHTML=total_Quan;
             document.getElementById('rec_quan').innerHTML=receive_Quan;
             document.getElementById('remain').innerHTML=rem_quan;
