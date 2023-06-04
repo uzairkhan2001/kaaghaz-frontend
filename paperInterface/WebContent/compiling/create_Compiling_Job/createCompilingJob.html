@@ -86,15 +86,16 @@
   <thead>  
     <tr>  
       <th> Print ID </th> 
-      <th> Raw Material </th> 
       <th> Size </th>  
       <th> Weight </th>  
       <th> Vendor </th>  
+      <th> Print Vendor </th>  
       <th> Quantity Available</th>
+      <th> Quantity Sent</th>
       <th> Status </th>  
     </tr>   
   </thead> 
-  <tbody id = "printingJob"> </tbody>  
+  <tbody id = "compilingJob"> </tbody>  
   
 </table>
  <div class="loginPopup">
@@ -128,7 +129,7 @@ window.onload = (e) =>{
 	console.log("Page has been loaded");
 }
 function removeRows() {
-      var table = document.getElementById("printingJob");
+      var table = document.getElementById("compilingJob");
       var rowCount = table.rows.length;
       // Start from the last row to avoid issues with changing indices.
       for (var i = rowCount - 1; i >= 0; i--) {
@@ -169,9 +170,9 @@ myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <createPrintingJob xmlns="http://create_printing_job">
+        <createCompilingJob xmlns="http://create_compiling_job">
             <category>${category}</category>
-        </createPrintingJob>
+        </createCompilingJob>
     </Body>
 </Envelope>`
 
@@ -182,33 +183,35 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("http://localhost:8080/paper/services/CreatePrintingJob", requestOptions)
+fetch("http://localhost:8080/paper/services/CreateCompilingJob", requestOptions)
   .then(response => response.text())
   .then(result =>  {
 			
 		  var xml = parseXML(result);
-		  var tbody = document.getElementById('printingJob');
-		  var numberOfRecords = xml.getElementsByTagName('createPrintingJobReturn').length;
+		  var tbody = document.getElementById('compilingJob');
+		  var numberOfRecords = xml.getElementsByTagName('createCompilingJobReturn').length;
 		
 		  for(i = 0; i < numberOfRecords; i++){
 			  
-			  	var purchaseId = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[0].childNodes[0].nodeValue;
-					var raw = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[1].childNodes[0].nodeValue;
-          var size = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[2].childNodes[0].nodeValue;
-					var weight = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
-					var vendor = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[4].childNodes[0].nodeValue;
-					var total_Quan = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[5].childNodes[0].nodeValue;
+			  	var printId = xml.getElementsByTagName('createCompilingJobReturn')[i].childNodes[0].childNodes[0].nodeValue;
+					var raw = xml.getElementsByTagName('createCompilingJobReturn')[i].childNodes[1].childNodes[0].nodeValue;
+          var size = xml.getElementsByTagName('createCompilingJobReturn')[i].childNodes[2].childNodes[0].nodeValue;
+					var weight = xml.getElementsByTagName('createCompilingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
+					var vendor = xml.getElementsByTagName('createCompilingJobReturn')[i].childNodes[4].childNodes[0].nodeValue;
+          var printvendor = xml.getElementsByTagName('createCompilingJobReturn')[i].childNodes[5].childNodes[0].nodeValue;
+					var total_Quan = xml.getElementsByTagName('createCompilingJobReturn')[i].childNodes[6].childNodes[0].nodeValue;
+					var Quan_sent = xml.getElementsByTagName('createCompilingJobReturn')[i].childNodes[7].childNodes[0].nodeValue;
           if(total_Quan>0){
-					additem(purchaseId,raw,size,weight,vendor,total_Quan,purchaseId);
+					additem(printId,raw,size,weight,vendor,printvendor,total_Quan,Quan_sent,printId);
           }
 		  }
 	  })
   .catch(error => console.log('error', error));
 }
 
-function additem(purchaseId,raw,size,weight,vendor,total_Quan,purchaseId){
+function additem(printId,raw,size,weight,vendor,printvendor,total_Quan,Quan_sent,printId){
 
-  var tbody = document.getElementById('printingJob');
+  var tbody = document.getElementById('compilingJob');
 
   let br = document.createElement("br");
   let br1 = document.createElement('br');
@@ -216,27 +219,31 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,purchaseId){
 
 	let trow=document.createElement("tr");
 	let td1=document.createElement('td');
-	let td2=document.createElement('td');
 	let td3=document.createElement('td');
 	let td4=document.createElement('td');
 	let td5=document.createElement('td');
 	let td6=document.createElement('td');
+  let td7=document.createElement('td');
+	let td8=document.createElement('td');
   let td10=document.createElement('td');
   
-	td1.innerHTML="PRI"+purchaseId;
-	td2.innerHTML=raw;
+	td1.innerHTML="PRI"+printId;
   td3.innerHTML=size;
 	td4.innerHTML=weight;
 	td5.innerHTML=vendor;
-	td6.innerHTML=total_Quan;
-  td6.setAttribute("id", "all"  + purchaseId);
+	td6.innerHTML=printvendor;
+  td7.innerHTML=total_Quan;
+	td8.innerHTML=Quan_sent;
+  td7.setAttribute("id", "all"  + printId);
+  td8.setAttribute("id", "snt"  + printId);
   
 	trow.appendChild(td1);
-	trow.appendChild(td2);
 	trow.appendChild(td3);
 	trow.appendChild(td4);
 	trow.appendChild(td5);
 	trow.appendChild(td6);
+  trow.appendChild(td7);
+	trow.appendChild(td8);
 
   var buttonText;
 
@@ -245,9 +252,9 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,purchaseId){
   
 
     let tdbutton = document.createElement('button');
-    tdbutton.innerText = "Send to Print";
-    tdbutton.setAttribute("id","rcv" + purchaseId);
-    tdbutton.setAttribute("onCLick", "openPrintForm(this.id)");
+    tdbutton.innerText = "Send to Compile";
+    tdbutton.setAttribute("id","rcv" + printId);
+    tdbutton.setAttribute("onCLick", "openCompileForm(this.id)");
     tdbutton.setAttribute("style", "background-color: #26c406;");
     tdbutton.setAttribute("class", "edit");
     td10.setAttribute("style", "color: #26c406;");
@@ -263,7 +270,7 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,purchaseId){
 }
 
 //Send to print pop up form
-function createPrintForm(purchaseId){
+function createCompileForm(printID){
 
 let br1 = document.createElement("br");
 let br2 = document.createElement("br");
@@ -282,7 +289,7 @@ const h = document.createElement('h2');
 h.textContent = "COMPILING JOB";
 
 var label1 = document.createElement('label');
-label1.innerHTML = "PRINT ID: "+purchaseId;
+label1.innerHTML = "PRINT ID: "+printID;
 
 //create input element 1
 var quantity = document.createElement('input');
@@ -308,8 +315,8 @@ let send = document.createElement('button');
 send.innerText = "Send";
 send.type = "button";
 send.setAttribute("class",'save');
-send.setAttribute("id", "snd" + purchaseId);
-send.setAttribute("onCLick", "sendPrint(this.id)");
+send.setAttribute("id", "snd" + printID);
+send.setAttribute("onCLick", "sendCompile(this.id)");
 
 //create a button
 let close = document.createElement('button');
@@ -338,21 +345,21 @@ f.appendChild(close);
 document.getElementById('popupForm').appendChild(f); //pure javascript
 }
 
-function openPrintForm(purchaseId) {
+function openCompileForm(printID) {
     if(document.getElementById("rcvfrm") == null)
     {
       let pid;
 
-      if(purchaseId[0] == 'r')
+      if(printID[0] == 'r')
       {
-        pid = purchaseId.substring(3);
+        pid = printID.substring(3);
       }
       else
       {
-        pid = purchaseId
+        pid = printID
       }
 
-      createPrintForm(pid);
+      createCompileForm(pid);
       document.getElementById("popupForm").style.display = "block";
     }
   }
@@ -365,7 +372,7 @@ myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <getAllPrintVendor xmlns="http://create_printing_job"/>
+        <getAllCompileVendor xmlns="http://create_compiling_job"/>
     </Body>
 </Envelope>`
 
@@ -376,17 +383,17 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("http://localhost:8080/paper/services/GetAllPrintVendors", requestOptions)
+fetch("http://localhost:8080/paper/services/GetAllCompileVendors", requestOptions)
   .then(response => response.text())
   .then(
     (result => {
 			  var xml = parseXML(result);
 			  var select = document.getElementById('vendors');
-			  var numberOfSizes = xml.getElementsByTagName('getAllPrintVendorReturn').length;
+			  var numberOfSizes = xml.getElementsByTagName('getAllCompileVendorReturn').length;
 			  for(i = 0; i < numberOfSizes; i++)
 			  {
-				var id = xml.getElementsByTagName('getAllPrintVendorReturn')[i].childNodes[0].childNodes[0].nodeValue;
-				var name = xml.getElementsByTagName('getAllPrintVendorReturn')[i].childNodes[1].childNodes[0].nodeValue;
+				var id = xml.getElementsByTagName('getAllCompileVendorReturn')[i].childNodes[0].childNodes[0].nodeValue;
+				var name = xml.getElementsByTagName('getAllCompileVendorReturn')[i].childNodes[1].childNodes[0].nodeValue;
 				
 				var opt = document.createElement('option');
 			    opt.value = id;
@@ -404,13 +411,14 @@ function closeForm() {
 }
 
 //Send For Printing Button
-function sendPrint(purchaseId){
+function sendCompile(printID){
   
-  var pid = purchaseId.substring(3)
+  var pid = printID.substring(3)
   var qty =document.getElementById("quan").value
   var ven =document.getElementById("vendors").value
   var quan = parseInt(document.getElementById("all" + pid).innerHTML);
-    
+  var quan_snt = parseInt(document.getElementById("snt" + pid).innerHTML);
+
 
   validateNullValues();
   res = validateValues(pid);
@@ -426,11 +434,11 @@ myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <sendPrintingJob xmlns="http://create_printing_job">
-            <purchaseID>${pid}</purchaseID>
+        <sendForCompilingJob xmlns="http://create_compiling_job">
+            <printID>${pid}</printID>
             <vendor>${ven}</vendor>
             <qty>${qty}</qty>
-        </sendPrintingJob>
+        </sendForCompilingJob>
     </Body>
 </Envelope>`
 
@@ -441,11 +449,13 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("http://localhost:8080/paper/services/SendForPrintingJob", requestOptions)
+fetch("http://localhost:8080/paper/services/SendForCompilingJob", requestOptions)
   .then(response => response.text())
   .then(result =>
   {
       document.getElementById("all" + pid).innerHTML = parseInt(quan) - parseInt(qty);
+      document.getElementById("snt" + pid).innerHTML = parseInt(quan_snt) + parseInt(qty);
+      
       console.log(result);
       closeForm();
     })

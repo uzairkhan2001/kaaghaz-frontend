@@ -86,8 +86,6 @@
   <thead>  
     <tr>  
       <th> ID </th> 
-      <th> Purchase ID </th> 
-      <th> Raw Material </th> 
       <th> Size </th>  
       <th> Weight </th>  
       <th> Purchase Vendor </th>
@@ -212,9 +210,7 @@ function additem(printId,purchaseId,raw,size,weight,vendor,printvendor,total_Qua
   let td10=document.createElement('td');
   let td11=document.createElement('td');
   
-	td1.innerHTML="PRID"+printId;
-  td2.innerHTML="PID"+purchaseId;
-	td3.innerHTML=raw;
+	td1.innerHTML="PRI"+printId+"-PID"+purchaseId;
   td4.innerHTML=size;
 	td5.innerHTML=weight;
 	td6.innerHTML=vendor;
@@ -227,8 +223,6 @@ function additem(printId,purchaseId,raw,size,weight,vendor,printvendor,total_Qua
   td10.setAttribute("id", "rem"  + printId);
   
 	trow.appendChild(td1);
-	trow.appendChild(td2);
-	trow.appendChild(td3);
 	trow.appendChild(td4);
 	trow.appendChild(td5);
 	trow.appendChild(td6);
@@ -436,12 +430,12 @@ function validateValues(pid) {
   }
   return 1;
 }
-function addallitem(printId,purchaseId,raw,size,weight,vendor,printvendor,total_Quan,receive_Quan,remain_Quan){
-	tbody.innerHTML="";
-	order.forEach(element=>{
-		additem(element.printId,element.purchaseId,element.raw,element.size,element.weight,element.vendor,element.printvendor,element.total_Quan,element.receive_Quan,element.remain_Quan)
-	})
-}
+// function addallitem(printId,purchaseId,raw,size,weight,vendor,printvendor,total_Quan,receive_Quan,remain_Quan){
+// 	tbody.innerHTML="";
+// 	order.forEach(element=>{
+// 		additem(element.printId,element.purchaseId,element.raw,element.size,element.weight,element.vendor,element.printvendor,element.total_Quan,element.receive_Quan,element.remain_Quan)
+// 	})
+// }
 
 </script>
 </html>

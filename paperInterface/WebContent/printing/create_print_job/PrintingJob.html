@@ -86,11 +86,11 @@
   <thead>  
     <tr>  
       <th> Purchase ID </th> 
-      <th> Raw Material </th> 
       <th> Size </th>  
       <th> Weight </th>  
       <th> Vendor </th>  
       <th> Quantity Available</th>
+      <th> Quantity Sent</th>
       <th> Status </th>  
     </tr>   
   </thead> 
@@ -198,15 +198,16 @@ fetch("http://localhost:8080/paper/services/CreatePrintingJob", requestOptions)
 					var weight = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
 					var vendor = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[4].childNodes[0].nodeValue;
 					var total_Quan = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[5].childNodes[0].nodeValue;
+          var Quan_Sent = xml.getElementsByTagName('createPrintingJobReturn')[i].childNodes[6].childNodes[0].nodeValue;
           if(total_Quan>0){
-					additem(purchaseId,raw,size,weight,vendor,total_Quan,purchaseId);
+					additem(purchaseId,raw,size,weight,vendor,total_Quan,Quan_Sent,purchaseId);
           }
 		  }
 	  })
   .catch(error => console.log('error', error));
 }
 
-function additem(purchaseId,raw,size,weight,vendor,total_Quan,purchaseId){
+function additem(purchaseId,raw,size,weight,vendor,total_Quan,Quan_Sent,purchaseId){
 
   var tbody = document.getElementById('printingJob');
 
@@ -216,33 +217,30 @@ function additem(purchaseId,raw,size,weight,vendor,total_Quan,purchaseId){
 
 	let trow=document.createElement("tr");
 	let td1=document.createElement('td');
-	let td2=document.createElement('td');
 	let td3=document.createElement('td');
 	let td4=document.createElement('td');
 	let td5=document.createElement('td');
 	let td6=document.createElement('td');
+  let td7=document.createElement('td');
   let td10=document.createElement('td');
   
 	td1.innerHTML="PID"+purchaseId;
-	td2.innerHTML=raw;
   td3.innerHTML=size;
 	td4.innerHTML=weight;
 	td5.innerHTML=vendor;
 	td6.innerHTML=total_Quan;
+  td7.innerHTML=Quan_Sent;
   td6.setAttribute("id", "all"  + purchaseId);
+  td7.setAttribute("id", "snt"  + purchaseId);
   
 	trow.appendChild(td1);
-	trow.appendChild(td2);
 	trow.appendChild(td3);
 	trow.appendChild(td4);
 	trow.appendChild(td5);
 	trow.appendChild(td6);
+	trow.appendChild(td7);
 
   var buttonText;
-
-  
-   
-  
 
     let tdbutton = document.createElement('button');
     tdbutton.innerText = "Send to Print";
@@ -410,7 +408,7 @@ function sendPrint(purchaseId){
   var qty =document.getElementById("quan").value
   var ven =document.getElementById("vendors").value
   var quan = parseInt(document.getElementById("all" + pid).innerHTML);
-    
+  var quan_snt = parseInt(document.getElementById("snt" + pid).innerHTML);
 
   validateNullValues();
   res = validateValues(pid);
@@ -446,6 +444,8 @@ fetch("http://localhost:8080/paper/services/SendForPrintingJob", requestOptions)
   .then(result =>
   {
       document.getElementById("all" + pid).innerHTML = parseInt(quan) - parseInt(qty);
+      document.getElementById("snt" + pid).innerHTML = parseInt(quan_snt) + parseInt(qty);
+      
       console.log(result);
       closeForm();
     })

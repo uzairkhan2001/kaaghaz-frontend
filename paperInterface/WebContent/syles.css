@@ -103,15 +103,16 @@
 }
 
 .login-box .user-box input {
-  width: 100%;
-  padding: 10px 0;
+  width: 180px;
+  padding: 10px 10px;
   font-size: 16px;
-  color: #fff;
+  color: rgba(0,0,0,.5);
   margin-bottom: 30px;
   border: none;
-  border-bottom: 1px solid #fff;
   outline: none;
   background: transparent;
+  background-color: #03e9f4;
+  text-align: left;
 }
 .login-box .user-box label {
   position: absolute;
