@@ -3,7 +3,7 @@
 <head>
 
     <meta charset="ISO-8859-1">
-  <title>Compiling Job history</title>
+  <title>Binding Job history</title>
     <link rel="stylesheet" href="../../syles.css">
     <style> 
         body{
@@ -64,17 +64,18 @@
 <div class="bdy">
 <div class="RepoBtns">
     <button class = 'btn' type="button" onclick="history.back()">BACK</button>
-    <h2>Compiling Job Details</h2>
+    <h2>Binding Job Details</h2>
 </div>
 <div>
     <div class="box-sizing">
-            <label>Compile ID: </label><label id="cid"></label><br><br>
-            <label>Print ID: </label><label id="pid"></label><br><br>
+            <label>Bind ID: </label><label id="cid"></label><br><br>
+            <label>Compile ID: </label><label id="pid"></label><br><br>
             <label>Size: </label><label id="size"></label><br><br>
             <label>Weight: </label><label id="weight"></label><br><br>
             <label>Purchasing Vendor: </label><label id="povendor"></label><br><br>
             <label>Printing Vendor: </label><label id="pjvendor"></label><br><br>
             <label>Compiling Vendor: </label><label id="cjvendor"></label><br><br>
+            <label>Binding Vendor: </label><label id="bjvendor"></label><br><br>
             <label>Total Quantity: </label><label id="quan"></label><br><br>
             <label>Received Quantity: </label><label id="rec_quan"></label><br><br>
             <label>Remaining Quantity: </label><label id="remain"></label><br><br>
@@ -89,7 +90,7 @@
                 <th> Time of Receipt </th>
             </tr>   
         </thead> 
-        <tbody id = "receiveCompileJob"> </tbody>  
+        <tbody id = "receiveBindJob"> </tbody>  
   
 </table>
 </div>
@@ -128,12 +129,12 @@ window.onload = (e) =>{
     else{
         pjidStr = pjidStr.substring(3);
         var pjid =parseInt(pjidStr);
-        CompilingJobDetails(pjid);
-        receivingDetailsOfCompilingJob(pjid);
+        BindingJobDetails(pjid);
+        receivingDetailsOfBindingJob(pjid);
     }
 }
 
-function receivingDetailsOfCompilingJob(pjid){
+function receivingDetailsOfBindingJob(pjid){
 
     var myHeaders = new Headers();
     myHeaders.append("SOAPAction", "\"\"");
@@ -141,9 +142,9 @@ function receivingDetailsOfCompilingJob(pjid){
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <receiveCompilingJobDetails xmlns="http://view_compilejob_receive">
+        <receiveBindingJobDetails xmlns="http://view_bindingjob_receive">
             <pjid>${pjid}</pjid>
-        </receiveCompilingJobDetails>
+        </receiveBindingJobDetails>
     </Body>
 </Envelope>`
 
@@ -154,19 +155,19 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("http://localhost:8080/paper/services/ReceiveCompilingJobDetails", requestOptions)
+fetch("http://localhost:8080/paper/services/ReceiveBindingJobDetails", requestOptions)
   .then(response => response.text())
   .then(result => {
 			
             var xml = parseXML(result);
-            var tbody = document.getElementById('receiveCompileJob');
-            var numberOfRecords = xml.getElementsByTagName('receiveCompilingJobDetailsReturn').length;
+            var tbody = document.getElementById('receiveBindJob');
+            var numberOfRecords = xml.getElementsByTagName('receiveBindingJobDetailsReturn').length;
           
             for(i = 0; i < numberOfRecords; i++){
                 
-                var receiveId = xml.getElementsByTagName('receiveCompilingJobDetailsReturn')[i].childNodes[0].childNodes[0].nodeValue;
-                var receive_Quan = xml.getElementsByTagName('receiveCompilingJobDetailsReturn')[i].childNodes[1].childNodes[0].nodeValue;
-                var time = xml.getElementsByTagName('receiveCompilingJobDetailsReturn')[i].childNodes[2].childNodes[0].nodeValue;
+                var receiveId = xml.getElementsByTagName('receiveBindingJobDetailsReturn')[i].childNodes[0].childNodes[0].nodeValue;
+                var receive_Quan = xml.getElementsByTagName('receiveBindingJobDetailsReturn')[i].childNodes[1].childNodes[0].nodeValue;
+                var time = xml.getElementsByTagName('receiveBindingJobDetailsReturn')[i].childNodes[2].childNodes[0].nodeValue;
 
                 additemROPid(receiveId,receive_Quan,time);
                       
@@ -176,7 +177,7 @@ fetch("http://localhost:8080/paper/services/ReceiveCompilingJobDetails", request
 }
 function additemROPid(receiveId,receive_Quan,time)
 {
-	var tbody = document.getElementById('receiveCompileJob');
+	var tbody = document.getElementById('receiveBindJob');
 
 	let br = document.createElement("br");
 
@@ -202,16 +203,16 @@ function additemROPid(receiveId,receive_Quan,time)
 
 
 
-function CompilingJobDetails(pjid){
+function BindingJobDetails(pjid){
     var myHeaders = new Headers();
     myHeaders.append("SOAPAction", "\"\"");
     myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <getCompilingJobSummary xmlns="http://view_compilejob_receive">
+        <getBindingJobSummary xmlns="http://view_bindingjob_receive">
             <pjid>${pjid}</pjid>
-        </getCompilingJobSummary>
+        </getBindingJobSummary>
     </Body>
 </Envelope>`
 
@@ -222,32 +223,34 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("http://localhost:8080/paper/services/GetCompilingJobSummary", requestOptions)
+fetch("http://localhost:8080/paper/services/GetBindingJobSummary", requestOptions)
   .then(response => response.text())
   .then(result => {
 			
             var xml = parseXML(result);
 
-            var compileId = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[0].childNodes[0].nodeValue;
-            var printID = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[1].childNodes[0].nodeValue;
-            var raw = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[2].childNodes[0].nodeValue;
-            var size = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[3].childNodes[0].nodeValue;
-            var weight = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[4].childNodes[0].nodeValue;
-            var povendor = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[5].childNodes[0].nodeValue;
-            var pjvendor = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[6].childNodes[0].nodeValue;
-            var cjvendor = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[7].childNodes[0].nodeValue;
-            var total_Quan = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[8].childNodes[0].nodeValue;
-            var receive_Quan = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[9].childNodes[0].nodeValue;
-            var time = xml.getElementsByTagName('getCompilingJobSummaryReturn')[0].childNodes[10].childNodes[0].nodeValue;
+            var bindId = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[0].childNodes[0].nodeValue;
+            var compileId = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[1].childNodes[0].nodeValue;
+            var raw = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[2].childNodes[0].nodeValue;
+            var size = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[3].childNodes[0].nodeValue;
+            var weight = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[4].childNodes[0].nodeValue;
+            var povendor = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[5].childNodes[0].nodeValue;
+            var pjvendor = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[6].childNodes[0].nodeValue;
+            var cjvendor = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[7].childNodes[0].nodeValue;
+            var bjvendor = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[8].childNodes[0].nodeValue;
+            var total_Quan = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[9].childNodes[0].nodeValue;
+            var receive_Quan = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[10].childNodes[0].nodeValue;
+            var time = xml.getElementsByTagName('getBindingJobSummaryReturn')[0].childNodes[11].childNodes[0].nodeValue;
             var rem_quan = parseInt(total_Quan) - parseInt(receive_Quan);
 
-            document.getElementById('cid').innerHTML=compileId;
-            document.getElementById('pid').innerHTML=printID;
+            document.getElementById('cid').innerHTML=bindId;
+            document.getElementById('pid').innerHTML=compileId;
             document.getElementById('size').innerHTML=size;
             document.getElementById('weight').innerHTML=weight;
             document.getElementById('povendor').innerHTML=povendor;
             document.getElementById('pjvendor').innerHTML=pjvendor;
             document.getElementById('cjvendor').innerHTML=cjvendor;
+            document.getElementById('bjvendor').innerHTML=bjvendor;
             document.getElementById('quan').innerHTML=total_Quan;
             document.getElementById('rec_quan').innerHTML=receive_Quan;
             document.getElementById('remain').innerHTML=rem_quan;
