@@ -63,7 +63,6 @@
     <a href="http://localhost:8080/paperInterface/printing/Printing.html">Printing Job</a>
     <a class="active" href="http://localhost:8080/paperInterface/compiling/Compiling.html">Compiling Job</a>
     <a href="http://localhost:8080/paperInterface/binding/Binding.html">Binding Job</a>
-    <a href="#about">About</a>
 </div>
 <div class="bdy">
 <div class="user-box">
@@ -71,14 +70,6 @@
     <button class = 'btn' type="button" onclick="history.back()">BACK</button>
 </div>
 <h1 class="head1">Manage Compiling Jobs</h1>
-  <br>
-  <br>
-  <select id="Category" onchange="getCompilingJobs()">
-    <option value="0">Select a category</option>
-        <option value="1">Paper</option>
-        <option value="2">Title Card</option>
-        <option value="3">Separator Card</option>
-</select>
 </div>      
 <div class="tble">
 <h1 class="head1">Compiling Jobs</h1>
@@ -87,13 +78,11 @@
     <tr>  
       <th> ID </th>
       <th> Size </th>  
-      <th> Weight </th>  
-      <th> Purchase Vendor </th>
-      <th> Printing Vendor </th>  
-      <th> Compiling Vendor </th>  
-      <th> Total Quantity</th>
-      <th> Receive Quantity</th>
-      <th> Remaining Quantity</th>
+      <th> Weight </th>    
+      <th> Compiler Vendor </th>    
+      <th> Paper Quantity</th>
+      <th> Title Card Quantity</th>
+      <th> Separator Quantity</th>
       <th> Status </th>  
     </tr>   
   </thead> 
@@ -129,29 +118,17 @@ if (typeof window.DOMParser != "undefined") {
 
 window.onload = (e) =>{
 	console.log("Page has been loaded");
+  getCompilingJobs();
 }
-function removeRows() {
-      var table = document.getElementById("receivecompilingJob");
-      var rowCount = table.rows.length;
-      // Start from the last row to avoid issues with changing indices.
-      for (var i = rowCount - 1; i >= 0; i--) {
-        table.deleteRow(i);
-      }
-      table.innerHTML = table.innerHTML.replace(/<br>/g, "");
-    }
 
 function getCompilingJobs(){
-  removeRows();
-    var category = document.getElementById('Category').value
     var myHeaders = new Headers();
 myHeaders.append("SOAPAction", "\"\"");
 myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <manageCompilingJob xmlns="http://manage_compiling_job">
-            <category>${category}</category>
-        </manageCompilingJob>
+        <manageCompilingJob xmlns="http://manage_compiling_job"/>
     </Body>
 </Envelope>`
 
@@ -172,25 +149,22 @@ fetch("http://localhost:8080/paper/services/ManageCompilingingJob", requestOptio
 		
 		  for(i = 0; i < numberOfRecords; i++){
 
-          var compileId = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[0].childNodes[0].nodeValue;
-          var printId = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[1].childNodes[0].nodeValue;
-					var size = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[2].childNodes[0].nodeValue;
-					var weight = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
-					var vendor = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[4].childNodes[0].nodeValue;
-					var printvendor = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[5].childNodes[0].nodeValue;
-          var compilevendor = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[6].childNodes[0].nodeValue;
-          var total_Quan = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[7].childNodes[0].nodeValue;
-          var receive_Quan = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[8].childNodes[0].nodeValue;
-          var remain_Quan = total_Quan - receive_Quan;
+          var id = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[0].childNodes[0].nodeValue;
+          var size = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[1].childNodes[0].nodeValue;
+					var weight = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[2].childNodes[0].nodeValue;
+					var compilevendor = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
+          var ppr_Quan = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[4].childNodes[0].nodeValue;
+          var tc_Quan = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[5].childNodes[0].nodeValue;
+          var sc_Quan = xml.getElementsByTagName('manageCompilingJobReturn')[i].childNodes[6].childNodes[0].nodeValue;
 
-					additem(compileId,printId,size,weight,vendor,printvendor,compilevendor,total_Quan,receive_Quan,remain_Quan,compileId);
+					additem(id,size,weight,compilevendor,ppr_Quan,tc_Quan,sc_Quan);
           
 		  }
 	  })
   .catch(error => console.log('error', error));
 }
 
-function additem(compileId,printId,size,weight,vendor,printvendor,compilevendor,total_Quan,receive_Quan,remain_Quan,compileId){
+function additem(id,size,weight,compilevendor,ppr_Quan,tc_Quan,sc_Quan){
 
   var tbody = document.getElementById('receivecompilingJob');
 
@@ -211,18 +185,16 @@ function additem(compileId,printId,size,weight,vendor,printvendor,compilevendor,
   let td10=document.createElement('td');
   let td11=document.createElement('td');
   
-	td1.innerHTML="COM"+compileId;
+	td1.innerHTML="COM"+id;
   td2.innerHTML=size;
 	td3.innerHTML=weight;
-	td4.innerHTML=vendor;
-	td5.innerHTML=printvendor;
-  td6.innerHTML=compilevendor;
-  td7.innerHTML=total_Quan;
-  td7.setAttribute("id", "qua"  + compileId);
-	td8.innerHTML=receive_Quan;
-  td8.setAttribute("id", "rec"  + compileId);
-	td9.innerHTML=remain_Quan;
-  td9.setAttribute("id", "rem"  + compileId);
+  td4.innerHTML=compilevendor;
+  td5.innerHTML=ppr_Quan;
+  td5.setAttribute("id", "prq"  + id);
+	td6.innerHTML=tc_Quan;
+  td6.setAttribute("id", "tcq"  + id);
+	td7.innerHTML=sc_Quan;
+  td7.setAttribute("id", "scq"  + id);
   
 	trow.appendChild(td1);
 	trow.appendChild(td2);
@@ -231,43 +203,20 @@ function additem(compileId,printId,size,weight,vendor,printvendor,compilevendor,
 	trow.appendChild(td5);
 	trow.appendChild(td6);
   trow.appendChild(td7);
-	trow.appendChild(td8);
-	trow.appendChild(td9);
 
     var buttonText;
 
-if(remain_Quan == 0)
-{
-  td10.innerHTML = "COMPLETED!";
-  td10.setAttribute("style", "color: #26c406;");
-  td10.style.fontWeight= "bold"
-}
 
-else
-{  if (remain_Quan < total_Quan)
-  {
-    buttonText = "Receive More";
-  }
- else
-  {
     buttonText = "Receive";
-  }
+
 
   let tdbutton = document.createElement('button');
   tdbutton.innerText = buttonText;
-  tdbutton.setAttribute("id","rcv" + compileId);
+  tdbutton.setAttribute("id","rcv" + id);
   tdbutton.setAttribute("onCLick", "openForm(this.id)");
   tdbutton.setAttribute("style", "background-color: #26c406;");
   tdbutton.setAttribute("class", "edit");
   td10.appendChild(tdbutton);
-}
-
-    let tdbutton2 = document.createElement('button');
-    tdbutton2.innerText ="View History";
-    tdbutton2.setAttribute("id","vhs" + compileId);
-    tdbutton2.setAttribute("onCLick", "redirect(this.id)");
-    tdbutton2.setAttribute("style", "background-color: #cf7d11;");
-    tdbutton2.setAttribute("class", "edit");
 
    
     td10.setAttribute("style", "color: #26c406;");
@@ -275,17 +224,11 @@ else
 
     td10.appendChild(br1);
     td10.appendChild(br2);
-    td10.appendChild(tdbutton2);
     trow.appendChild(td10);
     tbody.appendChild(trow);
     tbody.appendChild(br);
 }
 
-//
-function redirect(pjid){
-  
-  window.location.href = 'http://localhost:8080/paperInterface/compiling/manage_Compiling_Job/view_compilingjob_receive.html?pjid='+pjid;
-}
 //Send to print pop up form
 function createForm(compileId){
 
@@ -308,19 +251,10 @@ h1.textContent = "Compiling Job";
 var label1 = document.createElement('label');
 label1.innerHTML = "COMPILE ID: "+compileId;
 
-const label2 = document.createElement('label');
-label2.textContent = "Receive Quantity";
-
-//create input element 1
-var quan = document.createElement('input');
-quan.type = "number";
-quan.name = "quan";
-quan.id = "quantity";
-quan.placeholder = "Quantity"
 
 //create a button
 let insert = document.createElement('button');
-insert.innerText = "Submit";
+insert.innerText = "Confirm";
 insert.type = "button";
 insert.setAttribute("class",'save');
 insert.setAttribute("id", "ins" + compileId);
@@ -339,9 +273,6 @@ f.appendChild(h);
 f.appendChild(label1);
 f.appendChild(br1);
 f.appendChild(br5);
-f.appendChild(label2);
-f.appendChild(quan);
-f.appendChild(br2);
 f.appendChild(insert);
 f.appendChild(br3);
 f.appendChild(br4);
@@ -379,17 +310,12 @@ function closeForm() {
 function insertCompilingReceive(compileId){
 
   var cjid = compileId.substring(3)
-  var qty =document.getElementById("quantity").value
-  var receive = parseInt(document.getElementById("rec" + cjid).innerHTML);
-  var remaining = parseInt(document.getElementById("rem" + cjid).innerHTML);
-  
-  res = validateValues(cjid);
-  if(res == 0){
-    closeForm();
-    openForm(cid);
-  }
-  else
-  {
+  var cid = parseInt(cjid)
+  var pprqty =parseInt(document.getElementById("prq"+cjid).innerHTML)
+  var tcqty =parseInt(document.getElementById("tcq"+cjid).innerHTML)
+  var scqty =parseInt(document.getElementById("scq"+cjid).innerHTML)
+  // var receive = parseInt(document.getElementById("rec" + cjid).innerHTML);
+
   var myHeaders = new Headers();
   myHeaders.append("SOAPAction", "\"\"");
   myHeaders.append("Content-Type", "application/xml");
@@ -397,8 +323,10 @@ function insertCompilingReceive(compileId){
   var raw =`<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
         <insertReceiveFromCompiling xmlns="http://manage_compiling_job">
-            <compileID>${cjid}</compileID>
-            <receive>${qty}</receive>
+            <compileID>${cid}</compileID>
+            <paperQuantity>${pprqty}</paperQuantity>
+            <titlecardQuantity>${tcqty}</titlecardQuantity>
+            <separatorcardQuantity>${scqty}</separatorcardQuantity>
         </insertReceiveFromCompiling>
     </Body>
 </Envelope>`
@@ -413,26 +341,16 @@ function insertCompilingReceive(compileId){
   fetch("http://localhost:8080/paper/services/InsertReceiveFromCompiling", requestOptions)
     .then(response => response.text())
     .then(result => {
-      document.getElementById("rec" + cjid).innerHTML = parseInt(qty) + parseInt(receive);
-      document.getElementById("rem" + cjid).innerHTML = remaining - qty;
+      document.getElementById("rcv" + cjid).innerHTML = "COMPLETED!";
+      document.getElementById("rcv" + cjid).setAttribute("style", "color: #26c406;");
+      document.getElementById("rcv" + cjid).style.fontWeight= "bold";
       console.log(result);
       closeForm();
     })
     .catch(error => console.log('error', error));
-
-}
-}
-function validateValues(cid) {
-    var qty =document.getElementById("quantity").value
-    var quan = parseInt(document.getElementById("rem" + cid).innerHTML);
     
-    error = "Quantity exceed from Remaining Quantity!"
-    if(qty > quan){
-    alert(error); 
-    return 0;
-  }
-  return 1;
 }
+
 // function addallitem(printId,purchaseId,raw,size,weight,vendor,printvendor,total_Quan,receive_Quan,remain_Quan){
 // 	tbody.innerHTML="";
 // 	order.forEach(element=>{

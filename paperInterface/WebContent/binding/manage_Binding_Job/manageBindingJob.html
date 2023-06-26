@@ -71,30 +71,19 @@
     <button class = 'btn' type="button" onclick="history.back()">BACK</button>
 </div>
 <h1 class="head1">Manage Binding Jobs</h1>
-  <br>
-  <br>
-  <select id="Category" onchange="getBindingJobs()">
-    <option value="0">Select a category</option>
-        <option value="1">Paper</option>
-        <option value="2">Title Card</option>
-        <option value="3">Separator Card</option>
-</select>
 </div>      
 <div class="tble">
 <h1 class="head1">Binding Jobs</h1>
 <table class="tableData" id="myTable">  
   <thead>  
     <tr>  
-      <th> ID </th>
+      <th> Binding ID </th> 
       <th> Size </th>  
-      <th> Weight </th>  
-      <th> Purchase Vendor </th>
-      <th> Printing Vendor </th>  
-      <th> Compiling Vendor </th>  
-      <th> Binding Vendor </th>  
-      <th> Total Quantity</th>
-      <th> Receive Quantity</th>
-      <th> Remaining Quantity</th>
+      <th> Weight </th>   
+      <th> Compile Vendor </th>  
+      <th> Paper Quantity</th>
+      <th> Title Card Quantity</th>
+      <th> Separator Quantity</th>
       <th> Status </th>  
     </tr>   
   </thead> 
@@ -130,29 +119,18 @@ if (typeof window.DOMParser != "undefined") {
 
 window.onload = (e) =>{
 	console.log("Page has been loaded");
+  getBindingJobs();
 }
-function removeRows() {
-      var table = document.getElementById("receivebindingJob");
-      var rowCount = table.rows.length;
-      // Start from the last row to avoid issues with changing indices.
-      for (var i = rowCount - 1; i >= 0; i--) {
-        table.deleteRow(i);
-      }
-      table.innerHTML = table.innerHTML.replace(/<br>/g, "");
-    }
+
 
 function getBindingJobs(){
-  removeRows();
-    var category = document.getElementById('Category').value
     var myHeaders = new Headers();
 myHeaders.append("SOAPAction", "\"\"");
 myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <manageBindingJob xmlns="http://manage_binding_job">
-            <category>${category}</category>
-        </manageBindingJob>
+        <manageBindingJob xmlns="http://manage_binding_job"/>
     </Body>
 </Envelope>`
 
@@ -173,124 +151,85 @@ fetch("http://localhost:8080/paper/services/ManageBindingingJob", requestOptions
 		
 		  for(i = 0; i < numberOfRecords; i++){
 
-          var bindId = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[0].childNodes[0].nodeValue;
-          var compileId = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[1].childNodes[0].nodeValue;
-					var size = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[2].childNodes[0].nodeValue;
-					var weight = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
-					var vendor = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[4].childNodes[0].nodeValue;
-					var printvendor = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[5].childNodes[0].nodeValue;
-          var compilevendor = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[6].childNodes[0].nodeValue;
-          var bindvendor = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[7].childNodes[0].nodeValue;
-          var total_Quan = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[8].childNodes[0].nodeValue;
-          var receive_Quan = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[9].childNodes[0].nodeValue;
-          var remain_Quan = total_Quan - receive_Quan;
+        var id = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[0].childNodes[0].nodeValue;
+          var size = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[1].childNodes[0].nodeValue;
+					var weight = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[2].childNodes[0].nodeValue;
+					var compilevendor = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
+          var ppr_Quan = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[4].childNodes[0].nodeValue;
+          var tc_Quan = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[5].childNodes[0].nodeValue;
+          var sc_Quan = xml.getElementsByTagName('manageBindingJobReturn')[i].childNodes[6].childNodes[0].nodeValue;
 
-					additem(bindId,compileId,size,weight,vendor,printvendor,compilevendor,bindvendor,total_Quan,receive_Quan,remain_Quan,bindId);
-          
+					additem(id,size,weight,compilevendor,ppr_Quan,tc_Quan,sc_Quan);
+
 		  }
 	  })
   .catch(error => console.log('error', error));
 }
 
-function additem(bindId,compileId,size,weight,vendor,printvendor,compilevendor,bindvendor,total_Quan,receive_Quan,remain_Quan,bindId){
+function additem(id,size,weight,compilevendor,ppr_Quan,tc_Quan,sc_Quan){
 
   var tbody = document.getElementById('receivebindingJob');
 
-  let br = document.createElement("br");
-  let br1 = document.createElement('br');
-  let br2 = document.createElement('br');
+let br = document.createElement("br");
+let br1 = document.createElement('br');
+let br2 = document.createElement('br');
 
-	let trow=document.createElement("tr");
-	let td1=document.createElement('td');
-	let td2=document.createElement('td');
-	let td3=document.createElement('td');
-	let td4=document.createElement('td');
-	let td5=document.createElement('td');
-	let td6=document.createElement('td');
-  let td7=document.createElement('td');
-	let td8=document.createElement('td');
-	let td9=document.createElement('td');
-  let td10=document.createElement('td');
-  let td11=document.createElement('td');
-  let td12=document.createElement('td');
-  
-	td1.innerHTML="BIN"+bindId;
-  td2.innerHTML=size;
-	td3.innerHTML=weight;
-	td4.innerHTML=vendor;
-	td5.innerHTML=printvendor;
-  td6.innerHTML=compilevendor;
-  td7.innerHTML=bindvendor;
-  td8.innerHTML=total_Quan;
-  td8.setAttribute("id", "qua"  + bindId);
-	td9.innerHTML=receive_Quan;
-  td9.setAttribute("id", "rec"  + bindId);
-	td10.innerHTML=remain_Quan;
-  td10.setAttribute("id", "rem"  + bindId);
-  
-	trow.appendChild(td1);
-	trow.appendChild(td2);
-	trow.appendChild(td3);
-	trow.appendChild(td4);
-	trow.appendChild(td5);
-	trow.appendChild(td6);
-  trow.appendChild(td7);
-	trow.appendChild(td8);
-	trow.appendChild(td9);
-	trow.appendChild(td10);
+let trow=document.createElement("tr");
+let td1=document.createElement('td');
+let td2=document.createElement('td');
+let td3=document.createElement('td');
+let td4=document.createElement('td');
+let td5=document.createElement('td');
+let td6=document.createElement('td');
+let td7=document.createElement('td');
+let td8=document.createElement('td');
+let td9=document.createElement('td');
+let td10=document.createElement('td');
 
-    var buttonText;
+td1.innerHTML="BIN"+id;
+td2.innerHTML=size;
+td3.innerHTML=weight;
+td4.innerHTML=compilevendor;
+td5.innerHTML=ppr_Quan;
+td5.setAttribute("id", "prq"  + id);
+td6.innerHTML=tc_Quan;
+td6.setAttribute("id", "tcq"  + id);
+td7.innerHTML=sc_Quan;
+td7.setAttribute("id", "scq"  + id);
 
-if(remain_Quan == 0)
-{
-  td11.innerHTML = "COMPLETED!";
-  td11.setAttribute("style", "color: #26c406;");
-  td11.style.fontWeight= "bold"
+trow.appendChild(td1);
+trow.appendChild(td2);
+trow.appendChild(td3);
+trow.appendChild(td4);
+trow.appendChild(td5);
+trow.appendChild(td6);
+trow.appendChild(td7);
+
+  var buttonText;
+
+
+  buttonText = "Receive";
+
+
+let tdbutton = document.createElement('button');
+tdbutton.innerText = buttonText;
+tdbutton.setAttribute("id","rcv" + id);
+tdbutton.setAttribute("onCLick", "openForm(this.id)");
+tdbutton.setAttribute("style", "background-color: #26c406;");
+tdbutton.setAttribute("class", "edit");
+td10.appendChild(tdbutton);
+
+ 
+  td10.setAttribute("style", "color: #26c406;");
+  td10.style.fontWeight= "bold"
+
+  td10.appendChild(br1);
+  td10.appendChild(br2);
+  trow.appendChild(td10);
+  tbody.appendChild(trow);
+  tbody.appendChild(br);
 }
 
-else
-{  if (remain_Quan < total_Quan)
-  {
-    buttonText = "Receive More";
-  }
- else
-  {
-    buttonText = "Receive";
-  }
-
-  let tdbutton = document.createElement('button');
-  tdbutton.innerText = buttonText;
-  tdbutton.setAttribute("id","rcv" + bindId);
-  tdbutton.setAttribute("onCLick", "openForm(this.id)");
-  tdbutton.setAttribute("style", "background-color: #26c406;");
-  tdbutton.setAttribute("class", "edit");
-  td11.appendChild(tdbutton);
-}
-
-    let tdbutton2 = document.createElement('button');
-    tdbutton2.innerText ="View History";
-    tdbutton2.setAttribute("id","vhs" + bindId);
-    tdbutton2.setAttribute("onCLick", "redirect(this.id)");
-    tdbutton2.setAttribute("style", "background-color: #cf7d11;");
-    tdbutton2.setAttribute("class", "edit");
-
-   
-    td11.setAttribute("style", "color: #26c406;");
-    td11.style.fontWeight= "bold"
-
-    td11.appendChild(br1);
-    td11.appendChild(br2);
-    td11.appendChild(tdbutton2);
-    trow.appendChild(td11);
-    tbody.appendChild(trow);
-    tbody.appendChild(br);
-}
-
-//
-function redirect(pjid){
-  
-  window.location.href = 'http://localhost:8080/paperInterface/binding/manage_Binding_Job/view_bindingjob_receive.html?pjid='+pjid;
-}
 //Send to print pop up form
 function createForm(bindId){
 
@@ -313,19 +252,9 @@ h1.textContent = "Binding Job";
 var label1 = document.createElement('label');
 label1.innerHTML = "BIND ID: "+bindId;
 
-const label2 = document.createElement('label');
-label2.textContent = "Receive Quantity";
-
-//create input element 1
-var quan = document.createElement('input');
-quan.type = "number";
-quan.name = "quan";
-quan.id = "quantity";
-quan.placeholder = "Quantity"
-
 //create a button
 let insert = document.createElement('button');
-insert.innerText = "Submit";
+insert.innerText = "Confirm";
 insert.type = "button";
 insert.setAttribute("class",'save');
 insert.setAttribute("id", "ins" + bindId);
@@ -344,9 +273,6 @@ f.appendChild(h);
 f.appendChild(label1);
 f.appendChild(br1);
 f.appendChild(br5);
-f.appendChild(label2);
-f.appendChild(quan);
-f.appendChild(br2);
 f.appendChild(insert);
 f.appendChild(br3);
 f.appendChild(br4);
@@ -384,17 +310,11 @@ function closeForm() {
 function insertBindingReceive(bindId){
 
   var bjid = bindId.substring(3)
-  var qty =document.getElementById("quantity").value
-  var receive = parseInt(document.getElementById("rec" + bjid).innerHTML);
-  var remaining = parseInt(document.getElementById("rem" + bjid).innerHTML);
-  
-  res = validateValues(bjid);
-  if(res == 0){
-    closeForm();
-    openForm(bid);
-  }
-  else
-  {
+  var cid = parseInt(bjid)
+  var pprqty =parseInt(document.getElementById("prq"+bjid).innerHTML)
+  var tcqty =parseInt(document.getElementById("tcq"+bjid).innerHTML)
+  var scqty =parseInt(document.getElementById("scq"+bjid).innerHTML)
+
   var myHeaders = new Headers();
   myHeaders.append("SOAPAction", "\"\"");
   myHeaders.append("Content-Type", "application/xml");
@@ -403,7 +323,9 @@ function insertBindingReceive(bindId){
     <Body>
         <insertReceiveFromBinding xmlns="http://manage_binding_job">
             <bindId>${bjid}</bindId>
-            <receive>${qty}</receive>
+            <paperQuantity>${pprqty}</paperQuantity>
+          <titlecardQuantity>${tcqty}</titlecardQuantity>
+          <separatorcardQuantity>${scqty}</separatorcardQuantity>
         </insertReceiveFromBinding>
     </Body>
 </Envelope>`
@@ -418,26 +340,16 @@ function insertBindingReceive(bindId){
   fetch("http://localhost:8080/paper/services/InsertReceiveFromBinding", requestOptions)
     .then(response => response.text())
     .then(result => {
-      document.getElementById("rec" + bjid).innerHTML = parseInt(qty) + parseInt(receive);
-      document.getElementById("rem" + bjid).innerHTML = remaining - qty;
+      document.getElementById("rcv" + bjid).innerHTML = "COMPLETE!";
+      document.getElementById("rcv" + bjid).setAttribute("style", "color: #26c406;");
+      document.getElementById("rcv" + bjid).style.fontWeight= "bold";
       console.log(result);
       closeForm();
     })
     .catch(error => console.log('error', error));
 
 }
-}
-function validateValues(bid) {
-    var qty =document.getElementById("quantity").value
-    var quan = parseInt(document.getElementById("rem" + bid).innerHTML);
-    
-    error = "Quantity exceed from Remaining Quantity!"
-    if(qty > quan){
-    alert(error); 
-    return 0;
-  }
-  return 1;
-}
+
 
 </script>
 </html>

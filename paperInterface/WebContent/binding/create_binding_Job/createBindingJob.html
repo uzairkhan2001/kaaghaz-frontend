@@ -63,7 +63,6 @@
     <a href="http://localhost:8080/paperInterface/printing/Printing.html">Printing Job</a>
     <a href="http://localhost:8080/paperInterface/compiling/Compiling.html">Compiling Job</a>
     <a class="active" href="http://localhost:8080/paperInterface/binding/Binding.html">Binding Job</a>
-    <a href="#about">About</a>
 </div>
 <div class="bdy">
 <div class="user-box">
@@ -71,14 +70,6 @@
     <button class = 'btn' type="button" onclick="history.back()">BACK</button>
 </div>
 <h1 class="head1">Create Binding Job</h1>
-  <br>
-  <br>
-  <select id="Category" onchange="getCategory()">
-    <option value="0">Select a category</option>
-        <option value="1">Paper</option>
-        <option value="2">Title Card</option>
-        <option value="3">Separator Card</option>
-</select>
 </div>      
 <div class="tble">
 <h1 class="head1">Binding Job</h1>
@@ -87,12 +78,11 @@
     <tr>  
       <th> Compile ID </th> 
       <th> Size </th>  
-      <th> Weight </th>  
-      <th> Vendor </th>  
-      <th> Print Vendor </th>  
+      <th> Weight </th>   
       <th> Compile Vendor </th>  
-      <th> Quantity Available</th>
-      <th> Quantity Sent</th>
+      <th> Paper Quantity</th>
+      <th> Title Card Quantity</th>
+      <th> Separator Quantity</th>
       <th> Status </th>  
     </tr>   
   </thead> 
@@ -128,52 +118,19 @@ if (typeof window.DOMParser != "undefined") {
 
 window.onload = (e) =>{
 	console.log("Page has been loaded");
+  getCategory();
 }
-function removeRows() {
-      var table = document.getElementById("BindingJob");
-      var rowCount = table.rows.length;
-      // Start from the last row to avoid issues with changing indices.
-      for (var i = rowCount - 1; i >= 0; i--) {
-        table.deleteRow(i);
-      }
-      table.innerHTML = table.innerHTML.replace(/<br>/g, "");
-    }
 
-//check null values
-function validateNullValues() {
-	vendor = document.getElementById('vendors').value
-	quan = document.getElementById('quan').value
-	error = "All Fields must be Valid Input!"
-	  if (vendor <= 0 || quan < 1 ) {
-		alert(error);
-	    window.location.reload();
-	  }
-	
-	}
-  function validateValues(pid) {
-    var qty =document.getElementById("quan").value
-    var quan = parseInt(document.getElementById("all" + pid).innerHTML);
-    
-    error = "Quantity exceed from Remaining Quantity!"
-    if(qty > quan){
-    alert(error); 
-    return 0;
-  }
-  return 1;
-}
+
 
 function getCategory(){
-  removeRows();
-    var category = document.getElementById('Category').value
     var myHeaders = new Headers();
 myHeaders.append("SOAPAction", "\"\"");
 myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
-        <createBindingJob xmlns="http://create_bindind_job">
-            <category>${category}</category>
-        </createBindingJob>
+        <createBindingJob xmlns="http://create_bindind_job"/>
     </Body>
 </Envelope>`
 
@@ -194,156 +151,83 @@ fetch("http://localhost:8080/paper/services/CreateBindingJob", requestOptions)
 		
 		  for(i = 0; i < numberOfRecords; i++){
 			  
-			  	var compileId = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[0].childNodes[0].nodeValue;
-					var raw = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[1].childNodes[0].nodeValue;
-          var size = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[2].childNodes[0].nodeValue;
-					var weight = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
-					var vendor = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[4].childNodes[0].nodeValue;
-          var printvendor = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[5].childNodes[0].nodeValue;
-          var compilevendor = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[6].childNodes[0].nodeValue;
-					var total_Quan = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[7].childNodes[0].nodeValue;
-					var Quan_sent = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[8].childNodes[0].nodeValue;
-          if(total_Quan>0){
-					additem(compileId,raw,size,weight,vendor,printvendor,compilevendor,total_Quan,Quan_sent,compileId);
-          }
+        var id = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[0].childNodes[0].nodeValue;
+          var size = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[1].childNodes[0].nodeValue;
+					var weight = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[2].childNodes[0].nodeValue;
+					var compilevendor = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[3].childNodes[0].nodeValue;
+          var ppr_Quan = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[4].childNodes[0].nodeValue;
+          var tc_Quan = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[5].childNodes[0].nodeValue;
+          var sc_Quan = xml.getElementsByTagName('createBindingJobReturn')[i].childNodes[6].childNodes[0].nodeValue;
+
+					additem(id,size,weight,compilevendor,ppr_Quan,tc_Quan,sc_Quan);
 		  }
 	  })
   .catch(error => console.log('error', error));
 }
 
-function additem(compileId,raw,size,weight,vendor,printvendor,compilevendor,total_Quan,Quan_sent,compileId){
+function additem(id,size,weight,compilevendor,ppr_Quan,tc_Quan,sc_Quan){
 
-  var tbody = document.getElementById('BindingJob');
+var tbody = document.getElementById('BindingJob');
 
-  let br = document.createElement("br");
-  let br1 = document.createElement('br');
-  let br2 = document.createElement('br');
+let br = document.createElement("br");
+let br1 = document.createElement('br');
+let br2 = document.createElement('br');
 
-	let trow=document.createElement("tr");
-	let td1=document.createElement('td');
-	let td2=document.createElement('td');
-	let td3=document.createElement('td');
-	let td4=document.createElement('td');
-	let td5=document.createElement('td');
-  let td6=document.createElement('td');
-	let td7=document.createElement('td');
-  let td8=document.createElement('td');
-  let td9=document.createElement('td');
-  
-	td1.innerHTML="COM"+compileId;
-  td2.innerHTML=size;
-	td3.innerHTML=weight;
-	td4.innerHTML=vendor;
-	td5.innerHTML=printvendor;
-	td6.innerHTML=compilevendor;
-  td7.innerHTML=total_Quan;
-	td8.innerHTML=Quan_sent;
-  td7.setAttribute("id", "all"  + compileId);
-  td8.setAttribute("id", "snt"  + compileId);
-  
-	trow.appendChild(td1);
-	trow.appendChild(td2);
-	trow.appendChild(td3);
-	trow.appendChild(td4);
-	trow.appendChild(td5);
-  trow.appendChild(td6);
-	trow.appendChild(td7);
-	trow.appendChild(td8);
+let trow=document.createElement("tr");
+let td1=document.createElement('td');
+let td2=document.createElement('td');
+let td3=document.createElement('td');
+let td4=document.createElement('td');
+let td5=document.createElement('td');
+let td6=document.createElement('td');
+let td7=document.createElement('td');
+let td8=document.createElement('td');
+let td9=document.createElement('td');
+let td10=document.createElement('td');
+let td11=document.createElement('td');
+
+td1.innerHTML="COM"+id;
+td2.innerHTML=size;
+td3.innerHTML=weight;
+td4.innerHTML=compilevendor;
+td5.innerHTML=ppr_Quan;
+td5.setAttribute("id", "prq"  + id);
+td6.innerHTML=tc_Quan;
+td6.setAttribute("id", "tcq"  + id);
+td7.innerHTML=sc_Quan;
+td7.setAttribute("id", "scq"  + id);
+
+trow.appendChild(td1);
+trow.appendChild(td2);
+trow.appendChild(td3);
+trow.appendChild(td4);
+trow.appendChild(td5);
+trow.appendChild(td6);
+trow.appendChild(td7);
 
   var buttonText;
 
-    let tdbutton = document.createElement('button');
-    tdbutton.innerText = "Send to Bind";
-    tdbutton.setAttribute("id","rcv" + compileId);
-    tdbutton.setAttribute("onCLick", "openBindForm(this.id)");
-    tdbutton.setAttribute("style", "background-color: #26c406;");
-    tdbutton.setAttribute("class", "edit");
-    td9.setAttribute("style", "color: #26c406;");
-    td9.style.fontWeight= "bold"
 
-    td9.appendChild(tdbutton);
-    td9.appendChild(br1);
-    td9.appendChild(br2);
+  buttonText = "Send To Bind";
 
-  trow.appendChild(td9);
-  tbody.appendChild(trow);
-	tbody.appendChild(br);
-}
 
-//Send to print pop up form
-function createBindForm(compileId){
+let tdbutton = document.createElement('button');
+tdbutton.innerText = buttonText;
+tdbutton.setAttribute("id","rcv" + id);
+tdbutton.setAttribute("onCLick", "openBindForm(this.id)");
+tdbutton.setAttribute("style", "background-color: #26c406;");
+tdbutton.setAttribute("class", "edit");
+td10.appendChild(tdbutton);
 
-let br1 = document.createElement("br");
-let br2 = document.createElement("br");
-let br3 = document.createElement("br");
-let br4 = document.createElement("br");
-let br5 = document.createElement("br");
-let br6 = document.createElement("br");
-let br7 = document.createElement("br");
-let br8 = document.createElement("br");
-
-var f = document.createElement('form');
-f.setAttribute("class","formContainer");
-f.setAttribute("id", "rcvfrm");
-
-const h = document.createElement('h2');
-h.textContent = "BINDING JOB";
-
-var label1 = document.createElement('label');
-label1.innerHTML = "COMPILE ID: "+compileId;
-
-//create input element 1
-var quantity = document.createElement('input');
-quantity.type = "number";
-quantity.name = "pj";
-quantity.id = "quan";
-quantity.placeholder = "Quantity"
  
-//create dropdown for vendor
+  td10.setAttribute("style", "color: #26c406;");
+  td10.style.fontWeight= "bold"
 
-var select = document.createElement('select');
-select.setAttribute("id", "vendors");
-select.setAttribute("class", "user-box");
-select.setAttribute("onCLick", loadVendor());
-var opt = document.createElement('option');
-opt.text = "Select Vendor";
-opt.value = "0";
-
-select.add(opt);
-
-//create a button
-let send = document.createElement('button');
-send.innerText = "Send";
-send.type = "button";
-send.setAttribute("class",'save');
-send.setAttribute("id", "snd" + compileId);
-send.setAttribute("onCLick", "sendBind(this.id)");
-
-//create a button
-let close = document.createElement('button');
-close.innerText = "close";
-close.type = "button";
-close.setAttribute("class",'delete');
-close.setAttribute("onCLick", "closeForm()");
-
-// add all elements to the form
-f.appendChild(h);
-f.appendChild(label1);
-f.appendChild(br1);
-f.appendChild(br5);
-f.appendChild(br7);
-f.appendChild(select);
-f.appendChild(br8);
-f.appendChild(br6);
-f.appendChild(quantity);
-f.appendChild(br2);
-f.appendChild(send);
-f.appendChild(br3);
-f.appendChild(br4);
-f.appendChild(close);
-
-// add the form inside the body
-document.getElementById('popupForm').appendChild(f); //pure javascript
+  td10.appendChild(br1);
+  td10.appendChild(br2);
+  trow.appendChild(td10);
+  tbody.appendChild(trow);
+  tbody.appendChild(br);
 }
 
 function openBindForm(compileId) {
@@ -364,6 +248,70 @@ function openBindForm(compileId) {
       document.getElementById("popupForm").style.display = "block";
     }
   }
+
+  //Send to print pop up form
+function createBindForm(compileId){
+
+let br1 = document.createElement("br");
+let br2 = document.createElement("br");
+let br3 = document.createElement("br");
+let br4 = document.createElement("br");
+let br5 = document.createElement("br");
+
+var f = document.createElement('form');
+f.setAttribute("class","formContainer");
+f.setAttribute("id", "rcvfrm");
+
+const h = document.createElement('h2');
+h.textContent = "Sending Data";
+
+const h1 = document.createElement('h1');
+h1.textContent = "Binding Job";
+
+var label1 = document.createElement('label');
+label1.innerHTML = "COMPILE ID: "+compileId;
+
+//create dropdown for vendor
+
+var select = document.createElement('select');
+select.setAttribute("id", "vendor");
+select.setAttribute("class", "user-box");
+select.setAttribute("onCLick", loadVendor());
+var opt = document.createElement('option');
+opt.text = "Select Vendor";
+opt.value = "0";
+select.add(opt);
+//create a button
+let insert = document.createElement('button');
+insert.innerText = "Send";
+insert.type = "button";
+insert.setAttribute("class",'save');
+insert.setAttribute("id", "ins" + compileId);
+insert.setAttribute("onCLick", "sendBind(this.id)");
+
+//create a button
+let close = document.createElement('button');
+close.innerText = "close";
+close.type = "button";
+close.setAttribute("class",'delete');
+close.setAttribute("onCLick", "closeForm()");
+
+// add all elements to the form
+f.appendChild(h1);
+f.appendChild(h);
+f.appendChild(label1);
+f.appendChild(br1);
+f.appendChild(select);
+f.appendChild(br5);
+f.appendChild(br2);
+f.appendChild(insert);
+f.appendChild(br3);
+f.appendChild(br4);
+f.appendChild(close);
+
+// add the form inside the body
+document.getElementById('popupForm').appendChild(f); //pure javascript
+}
 
 //Load Printing Vendor
 function loadVendor(){
@@ -389,7 +337,7 @@ fetch("http://localhost:8080/paper/services/GetAllBindingVendors", requestOption
   .then(
     (result => {
 			  var xml = parseXML(result);
-			  var select = document.getElementById('vendors');
+			  var select = document.getElementById('vendor');
 			  var numberOfSizes = xml.getElementsByTagName('getAllBindingVendorReturn').length;
 			  for(i = 0; i < numberOfSizes; i++)
 			  {
@@ -414,38 +362,32 @@ function closeForm() {
 //Send For Printing Button
 function sendBind(compileId){
   
-  var cid = compileId.substring(3)
-  var qty =document.getElementById("quan").value
-  var ven =document.getElementById("vendors").value
-  var quan = parseInt(document.getElementById("all" + cid).innerHTML);
-  var quan_snt = parseInt(document.getElementById("snt" + cid).innerHTML);
+  var cjid = compileId.substring(3)
+  var cid = parseInt(cjid)
+  var ven = parseInt(document.getElementById("vendor").value)
+  var pprqty =parseInt(document.getElementById("prq"+cjid).innerHTML)
+  var tcqty =parseInt(document.getElementById("tcq"+cjid).innerHTML)
+  var scqty =parseInt(document.getElementById("scq"+cjid).innerHTML)
 
-
-  validateNullValues();
-  res = validateValues(cid);
-  if(res == 0){
-    closeForm();
-    openForm(cid);
-  }
-  else
-  {
-    var myHeaders = new Headers();
-myHeaders.append("SOAPAction", "\"\"");
-myHeaders.append("Content-Type", "application/xml");
+  var myHeaders = new Headers();
+  myHeaders.append("SOAPAction", "\"\"");
+  myHeaders.append("Content-Type", "application/xml");
 
 var raw = `<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
     <Body>
         <sendForBindingJob xmlns="http://create_bindind_job">
-            <compileId>${cid}</compileId>
-            <vendor>${ven}</vendor>
-            <qty>${qty}</qty>
+          <compileID>${cid}</compileID>
+          <bindingVendor>${ven}</bindingVendor>
+          <paperQuantity>${pprqty}</paperQuantity>
+          <titlecardQuantity>${tcqty}</titlecardQuantity>
+          <separatorcardQuantity>${scqty}</separatorcardQuantity>
         </sendForBindingJob>
     </Body>
 </Envelope>`
 
 var requestOptions = {
   method: 'POST',
-  headers: myHeaders,
+  headers: myHeaders, 
   body: raw,
   redirect: 'follow'
 };
@@ -454,14 +396,15 @@ fetch("http://localhost:8080/paper/services/SendForBindingJob", requestOptions)
   .then(response => response.text())
   .then(result =>
   {
-      document.getElementById("all" + cid).innerHTML = parseInt(quan) - parseInt(qty);
-      document.getElementById("snt" + cid).innerHTML = parseInt(quan_snt) + parseInt(qty);
+    document.getElementById("rcv" + cjid).innerHTML = "SENT!";
+      document.getElementById("rcv" + cjid).setAttribute("style", "color: #26c406;");
+      document.getElementById("rcv" + cjid).style.fontWeight= "bold";
       
       console.log(result);
       closeForm();
     })
   .catch(error => console.log('error', error));
 }
-}
+
 </script>
 </html>
